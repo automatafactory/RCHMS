@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { StyleSheet, Text, View } from "react-native"
 import { Button } from "react-native-paper"
-import { Camera } from "react-native-vision-camera"
+import { BarCodeScanner } from "expo-barcode-scanner"
+import { Camera } from "expo-camera"
 import codeProcesser from "./codeProcesser"
 
 const QrScanner = () => {
@@ -10,12 +11,24 @@ const QrScanner = () => {
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
-      const { status } = await Camera.getCameraPermissionStatus()
+      const { status } = await BarCodeScanner.requestPermissionsAsync()
       setHasPermission(status === "granted")
     }
 
     getBarCodeScannerPermissions()
   }, [])
+
+  const handleBarCodeScanned = async ({ type, data }) => {
+    try {
+      setScanned(true)
+      let _data = await codeProcesser(type, data)
+      _data = JSON.stringify(_data)
+      alert(`Bar code with type ${type} and data ${_data} has been scanned!`)
+      goBack()
+    } catch (e) {
+      return e
+    }
+  }
 
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>
@@ -24,41 +37,21 @@ const QrScanner = () => {
     return <Text>No access to camera</Text>
   }
 
-  const devices = useCameraDevices()
-  const device = devices.back
-
-  if (device == null) return <LoadingView />
   return (
-    <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} />
+    <View style={styles.container}>
+      <Camera
+        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        style={StyleSheet.absoluteFillObject}
+        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+      />
+
+      {/* <View style={styles.row}>
+        <Text style={styles.text} variant="displaySmall">
+          Display small
+        </Text>
+      </View> */}
+    </View>
   )
-  //   return (
-  //     <View style={styles.container}>
-  //       <View style={styles.test}>
-  //         <View style={styles.row}>
-  //           {/* <Camera
-  //           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-  //           // style={StyleSheet.absoluteFillObject}
-  //           barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-  //         /> */}
-  //         </View>
-  //         <View style={styles.row}>
-  //           <Text style={styles.text} variant="displaySmall">
-  //             Display small
-  //           </Text>
-  //         </View>
-  //         <View style={styles.row}>
-  //           <Button
-  //             style={styles.btn}
-  //             icon="camera"
-  //             mode="contained"
-  //             onPress={() => console.log("Pressed")}
-  //           >
-  //             Press me
-  //           </Button>
-  //         </View>
-  //       </View>
-  //     </View>
-  //   )
 }
 
 const styles = StyleSheet.create({
@@ -66,10 +59,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#000000", // the rock-solid workaround
+    // backgroundColor: "#000000", // the rock-solid workaround
     flexDirection: "row",
     alignItemsArr: "center",
-    height: "100%",
+    // height: "100%",
     width: "100%",
   },
   text: {
@@ -78,14 +71,7 @@ const styles = StyleSheet.create({
   row: {
     width: "100%",
     flexDirection: "row",
-    backgroundColor: "#000077",
-  },
-  btn: {
-    margin: 50,
-  },
-  test: {
-    width: "100%",
-    height: "100%",
+    // backgroundColor: "#000077",
   },
 })
 

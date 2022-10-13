@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { AppRegistry, View } from "react-native"
 // Expo App
-import { StatusBar } from "expo-status-bar"e34
+import { StatusBar } from "expo-status-bar"
 // App Name
 import { name as appName } from "./app.json"
 //Theam

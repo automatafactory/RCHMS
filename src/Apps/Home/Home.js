@@ -66,6 +66,7 @@ function Home({ route, theme }) {
         <Stack.Screen
           name="CamaraScreen"
           component={CamaraScreen}
+          // initialParams={{ setAuth }}
           options={{
             title: "Back to Home",
             headerStyle: {
