@@ -1,6 +1,6 @@
 //React
 import { useEffect, useState } from "react"
-import { AppRegistry, View } from "react-native"
+import { AppRegistry, View, Appearance, PlatformColor } from "react-native"
 // Expo App
 import { StatusBar } from "expo-status-bar"
 // App Name
@@ -14,41 +14,82 @@ import {
 // Navigation
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { NavigationContainer } from "@react-navigation/native"
+import storage from "./src/Apps/storage"
+
 const Stack = createNativeStackNavigator()
 // Storage
 // import AsyncStorage from "@react-native-async-storage/async-storage"
 // Components
 import Home from "./src/Apps/Home/Home"
 import Login from "./src/Apps/Auth/Login"
-import { getToken } from "./src/Apps/GlobaVariable"
 
-const theme = {
-  ...DefaultTheme,
-  roundness: 2,
-  version: 3,
-  // colors: {
-  //   ...DefaultTheme.colors,
-  //   primary: "#1E90FF",
-  //   secondary: "#6495ed ",
-  //   tertiary: "#a1b2c3",
-  // },
+// const theme = {
+//   ...DefaultTheme,
+//   roundness: 2,
+//   version: 3,
+//   mode: "exact",
+//   dark: false,
+//   colors: {
+//     ...DefaultTheme.colors,
+//     primary: "#3498db",
+//   },
+// }
+
+async function fetchToken() {
+  await storage
+    .load({
+      key: "loginState",
+      autoSync: true,
+    })
+    .then((ret) => {
+      console.log(ret)
+      return true
+    })
+    .catch((err) => {
+      switch (err.name) {
+        case "NotFoundError":
+          return "NotFoundError"
+          break
+        case "ExpiredError":
+          return false
+          break
+      }
+    })
 }
 
 export default function App() {
+  // console.log(Appearance)
   const [auth, setAuth] = useState(true)
 
-  // const value = getToken()
-  // if (value != undefined) {
-  //   setAuth(true)
-  // }
+  fetchToken().then((ret) => {
+    console.log(ret)
+  })
 
   // useEffect(() => {
-  //   const value = getToken()
-  //   if (value !== null) setAuth(true)
-  // })
+  //   async function fetchData() {
+  //     await storage
+  //       .load({
+  //         key: "loginState",
+  //         autoSync: true,
+  //       })
+  //       .then((ret) => {
+  //         // found data go to then()
+  //         console.log("================ret====================")
+  //         console.log(ret)
+  //         setAuth(true)
+  //       })
+  //       .catch((err) => {
+  //         setAuth(false)
+  //       })
+  //   }
+  //   fetchData()
+  // }, [])
+
   return (
-    <NavigationContainer>
-      <PaperProvider theme={theme}>
+    <>
+      {/* <PaperProvider theme={theme}> */}
+      <StatusBar style="light" />
+      <NavigationContainer>
         <Stack.Navigator>
           {auth ? (
             <Stack.Screen
@@ -69,12 +110,9 @@ export default function App() {
             />
           )}
         </Stack.Navigator>
-      </PaperProvider>
-    </NavigationContainer>
+      </NavigationContainer>
+      {/* </PaperProvider> */}
+    </>
   )
-  // return (
-  //   <View>
-  //     <Home initialParams={{ setAuth }} />
-  //   </View>
-  // )
 }
+AppRegistry.registerComponent(appName, () => App)

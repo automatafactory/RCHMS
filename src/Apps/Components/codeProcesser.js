@@ -1,7 +1,6 @@
 import moment from "moment"
 import storage from "../storage"
 import uuid from "react-native-uuid"
-const storeData = () => {}
 
 export default async function codeProcesser(type, data) {
   const _date = new Date()

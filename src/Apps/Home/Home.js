@@ -14,7 +14,6 @@ import QrScanner from "../Components/QrScanner"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
 function HomeScreen({ navigation, route }) {
-  console.log("======= Called Home ========")
   const { setVisible, setAuth } = route.params
 
   // Navbar

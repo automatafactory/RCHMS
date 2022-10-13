@@ -2,43 +2,53 @@ import * as React from "react"
 import { useState } from "react"
 import { View, StyleSheet, StatusBar, Image, Alert } from "react-native"
 import { TextInput, Button, Text, Title } from "react-native-paper"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { setToken } from "../GlobaVariable"
+import storage from "../storage"
 
 const logincheck = async ({ username, password }) => {
-  await fetch("http://192.168.1.2:8000/login", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: username,
-      password: password,
-    }),
+  const _headers = new Headers()
+  _headers.append("Content-Type", "application/json")
+  _headers.append("Access-Control-Allow-Origin", "*")
+  _headers.append("Access-Control-Allow-Headers", "Content-Type")
+
+  const _body = JSON.stringify({
+    username: username,
+    password: password,
   })
+
+  const requestOptions = {
+    method: "POST",
+    headers: _headers,
+    body: _body,
+    redirect: "follow",
+  }
+
+  const url = "http://192.168.0.4:8000/oauth"
+
+  await fetch(url, requestOptions)
     .then((response) => {
       if (response.status != "200") {
         alert("Login failed")
       } else {
-        console.log("=================response===================")
-        console.log(response)
         return response.json()
       }
     })
-    .then(async (payload) => {
+    .then(async () => {
       try {
-        payload = payload.token
-        payload = JSON.stringify(payload)
-        await AsyncStorage.setItem("@token", token)
-        Alert(token)
+        // payload = payload.token
+        // console.log(payload)
+        // payload = JSON.stringify(payload)
+
+        storage.save({
+          key: "loginState", // Note: Do not use underscore("_") in key!
+          data: payload,
+          expires: 1000 * 3600,
+        })
       } catch (e) {
         Alert("Unable to store data.")
       }
     })
     .catch((error) => {
-      console.log("error")
-      console.error(error)
+      console.log("error", error)
     })
 }
 
