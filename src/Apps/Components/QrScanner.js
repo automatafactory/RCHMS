@@ -22,7 +22,7 @@ const QrScanner = () => {
     try {
       setScanned(true)
       let _data = await codeProcesser(type, data)
-      _data = JSON.stringify(_data)
+      _data = JSON.stringify(_data).console.log(_data)
       alert(`Bar code with type ${type} and data ${_data} has been scanned!`)
       goBack()
     } catch (e) {

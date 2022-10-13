@@ -24,6 +24,8 @@
     "react-native-paper": "^5.0.0-rc.6",
     "react-native-screens": "~3.15.0",
     "react-native-storage": "^1.0.1",
+    "react-native-uuid": "^2.0.1",
+    "react-native-vision-camera": "^2.14.1",
     "react-navigation": "^4.4.4",
     "react-router-native": "^6.4.2"
   },
