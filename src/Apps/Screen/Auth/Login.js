@@ -2,7 +2,7 @@ import * as React from "react"
 import { useState } from "react"
 import { View, StyleSheet, StatusBar, Image, Alert } from "react-native"
 import { TextInput, Button, Text, Title } from "react-native-paper"
-import storage from "../storage"
+import storage from "../../Components/storage"
 
 const logincheck = async ({ username, password }) => {
   const _headers = new Headers()

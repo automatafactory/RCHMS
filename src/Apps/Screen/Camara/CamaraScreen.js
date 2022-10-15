@@ -3,9 +3,9 @@ import { StyleSheet, Text, View } from "react-native"
 import { Button } from "react-native-paper"
 import { BarCodeScanner } from "expo-barcode-scanner"
 import { Camera } from "expo-camera"
-import codeProcesser from "./codeProcesser"
+import codeProcesser from "../../Components/codeProcesser"
 
-const QrScanner = () => {
+const QRScreen = () => {
   const [hasPermission, setHasPermission] = useState(null)
   const [scanned, setScanned] = useState(false)
 
@@ -41,7 +41,7 @@ const QrScanner = () => {
     <View style={styles.container}>
       <Camera
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
+        // style={StyleSheet.absoluteFillObject}
         barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
       />
 
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "#000000", // the rock-solid workaround
+    backgroundColor: "#000000", // the rock-solid workaround
     flexDirection: "row",
     alignItemsArr: "center",
     // height: "100%",
@@ -75,4 +75,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default QrScanner
+export default QRScreen

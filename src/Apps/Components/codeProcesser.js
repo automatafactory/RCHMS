@@ -1,5 +1,5 @@
 import moment from "moment"
-import storage from "../storage"
+import storage from "./storage"
 import uuid from "react-native-uuid"
 
 export default async function codeProcesser(type, data) {

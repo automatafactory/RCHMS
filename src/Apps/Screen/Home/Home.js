@@ -1,6 +1,6 @@
 import * as React from "react"
 import { StatusBar } from "expo-status-bar"
-import { StyleSheet, Text, View } from "react-native"
+import { Alert, StyleSheet, View } from "react-native"
 import {
   Paragraph,
   Dialog,
@@ -9,45 +9,32 @@ import {
   Button,
   Appbar,
   withTheme,
+  Text,
 } from "react-native-paper"
-//import QrScanner from "../Components/QrScanner"
-import QrScanner from "../Components/QR"
+import QRCamaraScreen from "../Camara/QRCamaraScreen"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import Navbar from "../Navbar/Navbar"
 
-function HomeScreen({ navigation, route }) {
-  const { setVisible, setAuth } = route.params
-
-  // Navbar
-  const _handleMore = () => console.log("Shown more")
+function HomeScreen({ navigation }) {
   return (
-    <Appbar.Header elevated mode="large">
-      <Appbar.BackAction onPress={() => setVisible(true)} />
-      <Appbar.Content title="Hampo" />
-      <Appbar.Action
-        icon="qrcode-scan"
-        onPress={() => navigation.navigate("CamaraScreen")}
-      />
-      <Appbar.Action icon="power" onPress={() => setAuth(false)} />
-      <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
-    </Appbar.Header>
+    <View>
+      <Navbar navigation={navigation} />
+    </View>
   )
 }
-
-function CamaraScreen({ navigation }) {
-  return <QrScanner />
+function CamareScreen({ navigation }) {
+  return <QRCamaraScreen navigation={navigation} />
 }
 
-function Home({ route, theme }) {
+function Home({ navigate, route, theme }) {
   // Theme properties
   const { colors } = theme
   const Stack = createNativeStackNavigator()
-  const [visible, setVisible] = React.useState(false)
   const showDialog = () => setVisible(true)
   const hideDialog = () => setVisible(false)
   const gotoCamara = () => navigate("CamaraScreen")
 
   const { setAuth } = route.params
-
   return (
     <View style={styles.container}>
       {/* Navigator Start */}
@@ -59,12 +46,11 @@ function Home({ route, theme }) {
           options={{
             headerShown: false,
           }}
-          initialParams={{ setVisible, setAuth }}
+          // initialParams={{ setVisible, setAuth }}
         />
         <Stack.Screen
           name="CamaraScreen"
-          component={CamaraScreen}
-          // initialParams={{ setAuth }}
+          component={CamareScreen}
           options={{
             title: "Back to Home",
             headerStyle: {
@@ -84,7 +70,7 @@ function Home({ route, theme }) {
             Popup Start 
             
             */}
-      <Provider>
+      {/* <Provider>
         <Portal>
           <Dialog visible={visible}>
             <Dialog.Content>
@@ -96,14 +82,14 @@ function Home({ route, theme }) {
             </Dialog.Actions>
           </Dialog>
         </Portal>
-      </Provider>
+      </Provider> */}
       <StatusBar style="auto" />
     </View>
   )
 }
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
   },
 })
 

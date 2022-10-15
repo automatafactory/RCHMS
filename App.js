@@ -14,80 +14,56 @@ import {
 // Navigation
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { NavigationContainer } from "@react-navigation/native"
-import storage from "./src/Apps/storage"
+import storage from "./src/Apps/Components/storage"
 
 const Stack = createNativeStackNavigator()
-// Storage
-// import AsyncStorage from "@react-native-async-storage/async-storage"
+
 // Components
-import Home from "./src/Apps/Home/Home"
-import Login from "./src/Apps/Auth/Login"
+import Home from "./src/Apps/Screen/Home/Home"
+import Login from "./src/Apps/Screen/Auth/Login"
 
-// const theme = {
-//   ...DefaultTheme,
-//   roundness: 2,
-//   version: 3,
-//   mode: "exact",
-//   dark: false,
-//   colors: {
-//     ...DefaultTheme.colors,
-//     primary: "#3498db",
-//   },
-// }
-
-async function fetchToken() {
-  await storage
-    .load({
-      key: "loginState",
-      autoSync: true,
-    })
-    .then((ret) => {
-      console.log(ret)
-      return true
-    })
-    .catch((err) => {
-      switch (err.name) {
-        case "NotFoundError":
-          return "NotFoundError"
-          break
-        case "ExpiredError":
-          return false
-          break
-      }
-    })
+const theme = {
+  ...DefaultTheme,
+  roundness: 2,
+  version: 3,
+  mode: "exact",
+  dark: false,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: "#3498db",
+  },
 }
 
 export default function App() {
   // console.log(Appearance)
+  // storage.save({
+  //   key: "loginState",
+  //   data: JSON.stringify({ token: "valud" }),
+  // })
   const [auth, setAuth] = useState(true)
 
-  fetchToken().then((ret) => {
-    console.log(ret)
-  })
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     await storage
-  //       .load({
-  //         key: "loginState",
-  //         autoSync: true,
-  //       })
-  //       .then((ret) => {
-  //         // found data go to then()
-  //         console.log("================ret====================")
-  //         console.log(ret)
-  //         setAuth(true)
-  //       })
-  //       .catch((err) => {
-  //         setAuth(false)
-  //       })
-  //   }
-  //   fetchData()
-  // }, [])
+  useEffect(() => {
+    async function fetchData() {
+      await storage
+        .load({
+          key: "loginState",
+          autoSync: true,
+        })
+        .then((ret) => {
+          // found data go to then()
+          const _token = JSON.parse(ret)
+          if (_token.token) setAuth(true)
+          if (!_token.token) setAuth(false)
+        })
+        .catch((err) => {
+          setAuth(false)
+        })
+    }
+    fetchData()
+  }, [])
 
   return (
-    <>
-      {/* <PaperProvider theme={theme}> */}
+    <PaperProvider theme={theme}>
       <StatusBar style="light" />
       <NavigationContainer>
         <Stack.Navigator>
@@ -111,8 +87,7 @@ export default function App() {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-      {/* </PaperProvider> */}
-    </>
+    </PaperProvider>
   )
 }
 AppRegistry.registerComponent(appName, () => App)
