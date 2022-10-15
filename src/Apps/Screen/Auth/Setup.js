@@ -1,12 +1,18 @@
 import * as React from "react"
 import { useState } from "react"
 import { View, StyleSheet, StatusBar, Image, Alert } from "react-native"
-import { TextInput, Button, Text, Title } from "react-native-paper"
-import AsyncStorage from "@react-native-async-storage/async-storage"
-import { setApi, setToken } from "../GlobaVariable"
+import { TextInput, Button, Text, Title, Avatar } from "react-native-paper"
+import storage from "../../Components/storage"
 
-const check = async ({ url }) => {
-  await fetch(`http://${url}/test`, {
+const check = async ({ apiUrl, navigation, setConerr }) => {
+  console.log("url", apiUrl)
+
+  if (!apiUrl) {
+    Alert.alert("Error", "Please enter a Api Server Address")
+    return
+  }
+
+  await fetch(`http://${apiUrl}/test`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -15,60 +21,73 @@ const check = async ({ url }) => {
   })
     .then(async (response) => {
       if (response.status != "200") {
-        alert("Error cunnecting with server failed")
-        return false
+        alert(
+          `Error connecting with server failed Status Code ${response.status}`
+        )
+        console.log(response)
+        setConerr(false)
+        return
       } else {
-        await setApi(url)
-        return true
+        await storage.save({
+          key: "api",
+          data: JSON.stringify(apiUrl),
+        })
+        navigation.navigate("Login")
       }
     })
-    .then(async (payload) => {
-      try {
-        payload = payload.token
-        payload = JSON.stringify(payload)
 
-        const token = setToken(payload)
-        Alert(token)
-      } catch (e) {
-        Alert("Unable to store data.")
-      }
-    })
     .catch((error) => {
-      console.log("error")
       console.error(error)
     })
 }
 
-export default function Login() {
-  console.log("======= Login ========")
-  const [url, setUrl] = useState("")
+export default function Setup({ navigation }) {
+  const [conerr, setConerr] = useState(false)
+  const [apiUrl, setApiUrl] = useState()
+
   return (
     <View style={StyleSheet.absoluteFillObject}>
       <View style={styles.wrapper}>
-        <Text style={styles.text} variant="displayLarge">
-          Server
-        </Text>
+        <View style={styles.imgcontainer}>
+          <Image
+            source={require("../../../assets/icon.png")}
+            style={styles.img}
+          />
+
+          <Text style={styles.text} variant="displayLarge">
+            Hampo
+          </Text>
+        </View>
 
         <View style={styles.container}>
+          {conerr ? (
+            <Text style={styles.errtext}>
+              Error Connecting to server please check the address of the server
+              of your connection.
+            </Text>
+          ) : null}
+
           <TextInput
-            label="Email"
-            value={addr}
-            onChangeText={(addr) => setUrl({ addr })}
+            error={conerr}
+            label="Server Address"
+            placeholder="eg: 192.168.0.1:8000"
+            value={apiUrl}
+            mode="outlined"
+            onChangeText={(apiUrl) => setApiUrl(apiUrl)}
           />
 
           <Button
             style={styles.margins}
-            mode="contained-tonal"
-            onPress={() => check({ url })}
+            mode="contained"
+            onPress={() => check({ apiUrl, navigation, setConerr })}
           >
-            Login
+            Connect
           </Button>
         </View>
       </View>
 
-      {/* <View footer>
-                <Text > Tanbin Hassan © 2022 - All Rights Reserved.</Text>
-            </View> */}
+      <Text> Tanbin Hassan © 2022 - All Rights Reserved.</Text>
+
       <StatusBar style="auto" />
     </View>
   )
@@ -79,6 +98,20 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     padding: "15%",
+    justifyContent: "space-evenly",
+  },
+  imgcontainer: {
+    marginTop: 30,
+    flex: 1,
+    width: "100%",
+    padding: 50,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  img: {
+    width: 100,
+    height: 100,
   },
   wrapper: {
     textAlign: "center",
@@ -91,17 +124,14 @@ const styles = StyleSheet.create({
   text: {
     padding: "5%",
   },
+  errtext: {
+    color: "red",
+    // backgroundColor: "black",
+    padding: 15,
+  },
   margins: {
     marginTop: "5%",
     width: "100%",
     marginBottom: "5%",
-  },
-  footer: {
-    // width: '100%',
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    padding: "5%",
-    position: "absolute",
   },
 })

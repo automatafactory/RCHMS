@@ -1,6 +1,26 @@
 import * as React from "react"
 import { Appbar } from "react-native-paper"
 import { Alert, StyleSheet, View } from "react-native"
+import storage from "../../Components/storage"
+
+const gettoken = async () => {
+  await storage
+    .load({
+      key: "loginState",
+      autoSync: true,
+    })
+    .then((ret) => {
+      console.log(ret)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+const logout = async () => {
+  await storage.remove({
+    key: "loginState",
+  })
+}
 
 const exit = () => {
   Alert.alert(
@@ -29,7 +49,8 @@ const Navbar = ({ navigation }) => {
         icon="qrcode-scan"
         onPress={() => navigation.navigate("CamaraScreen")}
       />
-      <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
+      <Appbar.Action icon="power" onPress={logout} />
+      <Appbar.Action icon="dots-vertical" onPress={gettoken} />
     </Appbar.Header>
   )
 }

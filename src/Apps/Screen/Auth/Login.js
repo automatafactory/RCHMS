@@ -1,10 +1,10 @@
-import * as React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { View, StyleSheet, StatusBar, Image, Alert } from "react-native"
 import { TextInput, Button, Text, Title } from "react-native-paper"
+
 import storage from "../../Components/storage"
 
-const logincheck = async ({ username, password }) => {
+const logincheck = async ({ api, username, password }) => {
   const _headers = new Headers()
   _headers.append("Content-Type", "application/json")
   _headers.append("Access-Control-Allow-Origin", "*")
@@ -22,86 +22,101 @@ const logincheck = async ({ username, password }) => {
     redirect: "follow",
   }
 
-  const url = "http://192.168.0.4:8000/oauth"
+  const url = `http://${api}/oauth`
+  console.log(url)
 
-  await fetch(url, requestOptions)
-    .then((response) => {
-      if (response.status != "200") {
-        alert("Login failed")
-      } else {
-        return response.json()
-      }
-    })
-    .then(async () => {
-      try {
-        // payload = payload.token
-        // console.log(payload)
-        // payload = JSON.stringify(payload)
+  try {
+    const response = await fetch(url, requestOptions)
 
-        storage.save({
-          key: "loginState", // Note: Do not use underscore("_") in key!
-          data: payload,
-          expires: 1000 * 3600,
-        })
-      } catch (e) {
-        Alert("Unable to store data.")
-      }
+    if (response.status != "200") alert("Login failed")
+    else return response.json()
+
+    await storage.save({
+      key: "loginState", // Note: Do not use underscore("_") in key!
+      data: payload,
+      expires: 1000 * 3600,
     })
-    .catch((error) => {
-      console.log("error", error)
+  } catch (error) {
+    console.log("error", error)
+  }
+}
+const loadStorage = async () => {
+  try {
+    return await storage.load({ key: "api" })
+  } catch (error) {
+    console.log("error>>>", error)
+    await storage.remove({
+      key: "api",
     })
+    return false
+  }
 }
 
-export default function Login() {
+export default function Login({ navigation }) {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  return (
-    <View style={StyleSheet.absoluteFillObject}>
-      <View style={styles.wrapper}>
-        <Text style={styles.text} variant="displayLarge">
-          Login
-        </Text>
+  const [payload, setPayload] = useState(async () => {
+    await loadStorage()
+  })
 
-        <View style={styles.container}>
-          <TextInput
-            label="Email"
-            value={username}
-            onChangeText={(username) => setUsername({ username })}
-          />
+  console.log(">", payload)
+  useEffect(() => {
+    setPayload(loadStorage())
+  }, [])
+  console.log(">>", payload)
 
-          <TextInput
-            style={styles.margins}
-            label="Password"
-            placeholder={"********"}
-            value={password}
-            secureTextEntry
-            right={<TextInput.Icon icon="eye" />}
-            onChangeText={(password) => setPassword({ password })}
-          />
-          <Button
-            style={styles.margins}
-            mode="contained-tonal"
-            onPress={() => logincheck({ username, password })}
-          >
+  if (payload) {
+    return (
+      <View style={StyleSheet.absoluteFillObject}>
+        <View style={styles.wrapper}>
+          <Text style={styles.text} variant="displayLarge">
             Login
-          </Button>
-          <Button
-            style={styles.margins}
-            mode="text"
-            onPress={() => console.log("Pressed")}
-          >
-            Forgot Password
-          </Button>
-        </View>
-      </View>
+          </Text>
 
-      {/* <View footer>
+          <View style={styles.container}>
+            <TextInput
+              label="Email"
+              value={username}
+              onChangeText={(username) => setUsername({ username })}
+            />
+
+            <TextInput
+              style={styles.margins}
+              label="Password"
+              placeholder={"********"}
+              value={password}
+              secureTextEntry
+              right={<TextInput.Icon icon="eye" />}
+              onChangeText={(password) => setPassword({ password })}
+            />
+            <Button
+              style={styles.margins}
+              mode="contained-tonal"
+              onPress={() => logincheck({ api, username, password })}
+            >
+              Login
+            </Button>
+            <Button
+              style={styles.margins}
+              mode="text"
+              onPress={() => console.log("Pressed")}
+            >
+              Forgot Password
+            </Button>
+          </View>
+        </View>
+
+        {/* <View footer>
                 <Text > Tanbin Hassan © 2022 - All Rights Reserved.</Text>
             </View> */}
-      <StatusBar style="auto" />
-    </View>
-  )
+        <StatusBar style="auto" />
+      </View>
+    )
+  } else {
+    navigation.navigate("Setup")
+  }
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
