@@ -14,11 +14,13 @@ import {
 import QRCamaraScreen from "../Camara/QRCamaraScreen"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import Navbar from "../Navbar/Navbar"
+import TableSpace from "./TableSpace"
 
 function HomeScreen({ navigation }) {
   return (
     <View>
       <Navbar navigation={navigation} />
+      <TableSpace />
     </View>
   )
 }

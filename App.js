@@ -24,22 +24,22 @@ import Login from "./src/Apps/Screen/Auth/Login"
 
 const theme = {
   ...DefaultTheme,
-  roundness: 2,
+  roundness: 10,
   version: 3,
-  mode: "exact",
+  mode: "adaptive",
   dark: false,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: "#3498db",
-  },
+  // colors: {
+  //   ...DefaultTheme.colors,
+  //   primary: "#3498db",
+  // },
 }
 
 export default function App() {
   // console.log(Appearance)
-  // storage.save({
-  //   key: "loginState",
-  //   data: JSON.stringify({ token: "valud" }),
-  // })
+  storage.save({
+    key: "loginState",
+    data: JSON.stringify({ token: "valud" }),
+  })
   const [auth, setAuth] = useState(true)
 
   useEffect(() => {

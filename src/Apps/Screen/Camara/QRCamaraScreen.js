@@ -58,23 +58,26 @@ export default function QRCamaraScreen() {
         />
       </View>
       <Text style={styles.maintext}>{text}</Text>
-      <View style={styles.btn}>
+      <View style={styles.btnview}>
         <Button
-          icon="camera"
           mode="contained"
+          icon="send"
+          style={styles.btn}
           onPress={() => console.log("Pressed")}
         >
-          Press me
+          Submit
+        </Button>
+
+        <Button
+          icon="refresh"
+          style={styles.btn}
+          disabled={!scanned ? true : false}
+          mode="contained"
+          onPress={() => setScanned(false)}
+        >
+          Scan Again
         </Button>
       </View>
-
-      {/* {scanned && (
-        <Button
-          title={"Scan again?"}
-          onPress={() => setScanned(false)}
-          color="tomato"
-        />
-      )} */}
     </View>
   )
 }
@@ -82,7 +85,7 @@ export default function QRCamaraScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#000",
+    backgroundColor: "#000",
     alignItems: "center",
     width: "100%",
     // justifyContent: "center",
@@ -96,11 +99,19 @@ const styles = StyleSheet.create({
 
     width: "100%",
   },
-  btn: {
+  btnview: {
     padding: "20%",
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "row",
+
     width: "100%",
+  },
+  btn: {
+    padding: 10,
+    margin: 10,
+
+    // borderRadius: "50%",
   },
   barcodebox: {
     alignItems: "center",
