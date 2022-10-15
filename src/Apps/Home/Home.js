@@ -10,7 +10,8 @@ import {
   Appbar,
   withTheme,
 } from "react-native-paper"
-import QrScanner from "../Components/QrScanner"
+//import QrScanner from "../Components/QrScanner"
+import QrScanner from "../Components/QR"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 
 function HomeScreen({ navigation, route }) {
@@ -19,18 +20,16 @@ function HomeScreen({ navigation, route }) {
   // Navbar
   const _handleMore = () => console.log("Shown more")
   return (
-    <View>
-      <Appbar.Header elevated mode="large">
-        <Appbar.BackAction onPress={() => setVisible(true)} />
-        <Appbar.Content title="Hampo" />
-        <Appbar.Action
-          icon="qrcode-scan"
-          onPress={() => navigation.navigate("CamaraScreen")}
-        />
-        <Appbar.Action icon="power" onPress={() => setAuth(false)} />
-        <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
-      </Appbar.Header>
-    </View>
+    <Appbar.Header elevated mode="large">
+      <Appbar.BackAction onPress={() => setVisible(true)} />
+      <Appbar.Content title="Hampo" />
+      <Appbar.Action
+        icon="qrcode-scan"
+        onPress={() => navigation.navigate("CamaraScreen")}
+      />
+      <Appbar.Action icon="power" onPress={() => setAuth(false)} />
+      <Appbar.Action icon="dots-vertical" onPress={_handleMore} />
+    </Appbar.Header>
   )
 }
 
@@ -104,7 +103,7 @@ function Home({ route, theme }) {
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
   },
 })
 
