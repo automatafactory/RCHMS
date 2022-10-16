@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { View, StyleSheet } from "react-native"
-import { Text, Button } from "react-native-paper"
+import { Text, Button, MD3LightTheme as DefaultTheme } from "react-native-paper"
 // import { BarCodeScanner } from "expo-barcode-scanner"
 import { Camera } from "expo-camera"
 
@@ -51,32 +51,38 @@ export default function QRCamaraScreen() {
   // Return the View
   return (
     <View style={styles.container}>
-      <View style={styles.barcodebox}>
+      <View style={styles.row}>
+        {/* <View style={styles.barcodebox}> */}
         <Camera
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={{ height: 400, width: 400 }}
+          style={styles.camara}
         />
+        {/* </View> */}
       </View>
-      <Text style={styles.maintext}>{text}</Text>
-      <View style={styles.btnview}>
-        <Button
-          mode="contained"
-          icon="send"
-          style={styles.btn}
-          onPress={() => console.log("Pressed")}
-        >
-          Submit
-        </Button>
+      <View style={styles.row}>
+        <Text style={styles.text}>{text}</Text>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.btnview}>
+          <Button
+            mode="contained"
+            icon="send"
+            style={styles.btn}
+            onPress={() => console.log("Pressed")}
+          >
+            Submit
+          </Button>
 
-        <Button
-          icon="refresh"
-          style={styles.btn}
-          disabled={!scanned ? true : false}
-          mode="contained"
-          onPress={() => setScanned(false)}
-        >
-          Scan Again
-        </Button>
+          <Button
+            icon="refresh"
+            style={styles.btn}
+            disabled={!scanned ? true : false}
+            mode="contained"
+            onPress={() => setScanned(false)}
+          >
+            Scan Again
+          </Button>
+        </View>
       </View>
     </View>
   )
@@ -86,32 +92,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#000",
-    alignItems: "center",
     width: "100%",
-    // justifyContent: "center",
-  },
-  maintext: {
-    backgroundColor: "#000",
-    color: "white",
-    fontSize: 20,
-    padding: 20,
-    textAlign: "center",
-
-    width: "100%",
-  },
-  btnview: {
-    padding: "20%",
-    alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row",
-
-    width: "100%",
+    flexDirections: "column",
+    alignItems: "flex-start",
   },
-  btn: {
-    padding: 10,
-    margin: 10,
-
-    // borderRadius: "50%",
+  row: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "center",
+    alignItemsArr: "center",
   },
   barcodebox: {
     alignItems: "center",
@@ -119,5 +109,32 @@ const styles = StyleSheet.create({
     width: "100%",
     overflow: "hidden",
     backgroundColor: "#000000",
+  },
+  camara: {
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    width: 300,
+    height: 300,
+  },
+  text: {
+    backgroundColor: "#000000",
+    color: "white",
+    fontSize: 20,
+    overflow: "scroll",
+    margin: "5%",
+    textAlign: "center",
+
+    width: "100%",
+  },
+  btnview: {
+    padding: "5%",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    width: "100%",
+  },
+  btn: {
+    margin: 10,
   },
 })

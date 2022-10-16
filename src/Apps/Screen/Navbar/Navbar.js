@@ -45,10 +45,10 @@ const Navbar = ({ navigation }) => {
     <Appbar.Header elevated mode="large">
       <Appbar.BackAction onPress={() => exit()} />
       <Appbar.Content title="Hampo" />
-      <Appbar.Action
+      {/* <Appbar.Action
         icon="qrcode-scan"
         onPress={() => navigation.navigate("CamaraScreen")}
-      />
+      /> */}
       <Appbar.Action icon="power" onPress={logout} />
       <Appbar.Action icon="dots-vertical" onPress={gettoken} />
     </Appbar.Header>

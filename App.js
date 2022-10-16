@@ -9,6 +9,7 @@ import {
   MD3LightTheme as DefaultTheme,
   Provider as PaperProvider,
   Text,
+  withTheme,
 } from "react-native-paper"
 // Navigation
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
@@ -16,7 +17,7 @@ import { NavigationContainer } from "@react-navigation/native"
 const Stack = createNativeStackNavigator()
 
 // Components
-import Home from "./src/Apps/Screen/Home/Home"
+import Main from "./src/Apps/Screen/Home/Main"
 import Setup from "./src/Apps/Screen/Auth/Setup"
 import Login from "./src/Apps/Screen/Auth/Login"
 import QRCamaraScreen from "./src/Apps/Screen/Camara/QRCamaraScreen"
@@ -29,23 +30,23 @@ const theme = {
   roundness: 10,
   version: 3,
   mode: "adaptive",
-  dark: false,
-  // colors: {
-  //   ...DefaultTheme.colors,
-  //   primary: "#3498db",
-  // },
+  dark: true,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: "#43C59E",
+    secondary: "#3498db",
+  },
 }
 
-export default function App() {
+function App() {
   const { colors } = theme
   return (
     <PaperProvider theme={theme}>
-      <StatusBar style="light" />
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
             name="Home"
-            component={Home}
+            component={Main}
             options={{
               headerShown: false,
             }}
@@ -85,4 +86,6 @@ export default function App() {
     </PaperProvider>
   )
 }
+export default withTheme(App)
+
 AppRegistry.registerComponent(appName, () => App)
