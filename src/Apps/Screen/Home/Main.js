@@ -19,7 +19,7 @@ function Home({ navigation }) {
 
   console.log(status)
 
-  if (status)
+  if (!status)
     return (
       <>
         <Navbar navigation={navigation} />

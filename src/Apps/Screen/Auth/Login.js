@@ -74,18 +74,6 @@ const serverAlart = ({ navigation }) => {
   )
 }
 
-const loadStorage = async () => {
-  try {
-    return await storage.load({ key: "api" })
-  } catch (error) {
-    console.log("error>>>", error)
-    // await storage.remove({
-    //   key: "api",
-    // })
-    return false
-  }
-}
-
 /*****************
  *
  *    MAIN
@@ -96,74 +84,75 @@ export default function Login({ navigation }) {
   // console.log("color>>>", DefaultTheme.colors)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [payload, setPayload] = useState("192.168.1.2:8000")
+  const [api, setApi] = useState("192.168.1.2:8000")
 
-  console.log(">", payload)
+  const loadStorage = async () => {
+    return
+  }
+
   useEffect(() => {
-    setPayload(loadStorage())
-  }, [])
-  console.log(">>", payload)
+    const fetchApi = async () => setApi(await storage.load({ key: "api" }))
 
-  if (payload) {
+    fetchApi()
+  }, [])
+
+  if (api) {
     return (
       <View style={styles.container}>
         <View style={styles.row}>
           <View style={styles.header}>
-            <View style={styles.imgcontainer}>
-              <Image
-                source={require("../../../assets/icon.png")}
-                style={styles.img}
-              />
-              <Text style={styles.text} variant="displayLarge">
-                Login
-              </Text>
-            </View>
+            <Image
+              source={require("../../../assets/icon.png")}
+              style={styles.img}
+            />
+            <Text style={styles.text} variant="displayLarge">
+              Login
+            </Text>
           </View>
         </View>
-
         <View style={styles.row}>
-          <TextInput
-            style={styles.margins}
-            label="Email"
-            mode="outlined"
-            value={username}
-            onChangeText={(username) => setUsername({ username })}
-          />
-          <TextInput
-            style={styles.margins}
-            mode="outlined"
-            label="Password"
-            placeholder={"********"}
-            value={password}
-            secureTextEntry
-            right={<TextInput.Icon icon="eye" />}
-            onChangeText={(password) => setPassword({ password })}
-          />
+          <View style={styles.body}>
+            <TextInput
+              label="Email"
+              mode="outlined"
+              value={username}
+              onChangeText={(username) => setUsername(username)}
+            />
+            <TextInput
+              mode="outlined"
+              label="Password"
+              placeholder={"********"}
+              value={password}
+              secureTextEntry
+              right={<TextInput.Icon icon="eye" />}
+              onChangeText={(password) => setPassword(password)}
+            />
 
-          <Button
-            style={styles.margins}
-            mode="contained"
-            onPress={() => logincheck({ username, password })}
-          >
-            Login
-          </Button>
-          <View style={styles.row}>
             <Button
               style={styles.margins}
-              mode="text"
-              textColor={DefaultTheme.colors.secondary}
-              onPress={() => Alert.alert("Contact Admin for reset password")}
+              mode="contained"
+              onPress={() => logincheck({ username, password })}
             >
-              Forgot Password
+              Login
             </Button>
-            <Button
-              style={styles.margins}
-              textColor={DefaultTheme.colors.error}
-              mode="text"
-              onPress={() => serverAlart({ navigation })}
-            >
-              Update Server
-            </Button>
+            <View style={styles.row}>
+              <Button
+                style={styles.margins}
+                mode="text"
+                textColor={DefaultTheme.colors.secondary}
+                onPress={() => Alert.alert("Contact Admin for reset password")}
+              >
+                Forgot Password
+              </Button>
+              <Button
+                style={styles.margins}
+                textColor={DefaultTheme.colors.error}
+                mode="text"
+                onPress={() => serverAlart({ navigation })}
+              >
+                Update Server
+              </Button>
+            </View>
           </View>
         </View>
         <View style={styles.row}>
@@ -183,7 +172,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
     flexDirection: "column",
-    justifyContent: "flex-start",
+    justifyContent: "space-around",
     alignItemsArr: "center",
   },
   row: {
@@ -191,41 +180,52 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItemsArr: "center",
   },
-  camara: {
+
+  header: {
     flex: 1,
     width: "100%",
     // padding: "20%",
     margin: "5%",
-    flexDirection: "column",
+    flexDirection: "row",
     justifyContent: "center",
     alignItemsArr: "center",
   },
   btn: {
     flex: 1,
-    height: "100%",
     width: "100%",
     padding: "10%",
     flexDirection: "column",
     justifyContent: "flex-start",
   },
 
-  // imgcontainer: {
-  //   marginTop: 30,
-  //   flex: 1,
-  //   width: "100%",
-  //   padding: 50,
-  //   flexDirection: "row",
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  // },
-  // img: {
-  //   width: 50,
-  //   height: 50,
-  //   margin: 10,
-  // },
+  imgcontainer: {
+    marginTop: 30,
+    flex: 1,
+    width: "100%",
+    padding: 50,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  img: {
+    width: 50,
+    height: 50,
+    margin: 10,
+  },
+  margins: {
+    marginTop: "10%",
+  },
   text: {
     fontFamily: DefaultTheme.colors.fontFamily,
     color: DefaultTheme.colors.primary,
     textAlign: "center",
+  },
+  body: {
+    flex: 1,
+    padding: "10%",
+    width: "100%",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItemsArr: "center",
   },
 })
