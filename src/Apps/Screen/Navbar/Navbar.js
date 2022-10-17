@@ -3,19 +3,6 @@ import { Appbar } from "react-native-paper"
 import { Alert, StyleSheet, View } from "react-native"
 import storage from "../../Components/storage"
 
-const gettoken = async () => {
-  await storage
-    .load({
-      key: "loginState",
-      autoSync: true,
-    })
-    .then((ret) => {
-      console.log(ret)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
 const logout = async () => {
   await storage.remove({
     key: "loginState",
@@ -50,7 +37,7 @@ const Navbar = ({ navigation }) => {
         onPress={() => navigation.navigate("CamaraScreen")}
       /> */}
       <Appbar.Action icon="power" onPress={logout} />
-      <Appbar.Action icon="dots-vertical" onPress={gettoken} />
+      <Appbar.Action icon="dots-vertical" />
     </Appbar.Header>
   )
 }

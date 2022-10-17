@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { View, StyleSheet } from "react-native"
 import { Text, Button, MD3LightTheme as DefaultTheme } from "react-native-paper"
-// import { BarCodeScanner } from "expo-barcode-scanner"
+import codeProcesser from "../../Components/codeProcesser"
 import { Camera } from "expo-camera"
 
 export default function QRCamaraScreen() {
@@ -68,7 +68,7 @@ export default function QRCamaraScreen() {
             mode="contained"
             icon="send"
             style={styles.btn}
-            onPress={() => console.log("Pressed")}
+            onPress={() => codeProcesser(text)}
           >
             Submit
           </Button>

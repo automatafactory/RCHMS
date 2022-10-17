@@ -12,14 +12,26 @@ const loadLoginState = async () => {
 }
 
 function Home({ navigation }) {
-  // const [status, setStatus] = useState(() => {
-  //    loadLoginState()
-  // })
-  const [status, setStatus] = useState("true")
+  const [loginState, setLginState] = useState()
+  storage
+    .load({
+      key: "loginState",
+      autoSync: true,
+      syncInBackground: true,
+      syncParams: {
+        someFlag: true,
+      },
+    })
+    .then((ret) => {
+      setLginState(ret)
+    })
+    .catch((err) => {
+      setLginState(undefined)
+    })
 
-  console.log(status)
+  console.log(loginState)
 
-  if (!status)
+  if (loginState)
     return (
       <>
         <Navbar navigation={navigation} />

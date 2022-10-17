@@ -18,8 +18,8 @@ const Stack = createNativeStackNavigator()
 
 // Components
 import Main from "./src/Apps/Screen/Home/Main"
-import Setup from "./src/Apps/Screen/Auth/Setup"
-import Login from "./src/Apps/Screen/Auth/Login"
+import Setup from "./src/Apps/Screen/Auth/Setup/Setup"
+import Login from "./src/Apps/Screen/Auth/Login/Login"
 import QRCamaraScreen from "./src/Apps/Screen/Camara/QRCamaraScreen"
 
 function CamareScreen({ navigation }) {
@@ -31,11 +31,11 @@ const theme = {
   version: 3,
   mode: "adaptive",
   dark: true,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: "#43C59E",
-    secondary: "#3498db",
-  },
+  // colors: {
+  //   ...DefaultTheme.colors,
+  //   primary: "#43C59E",
+  //   secondary: "#3498db",
+  // },
 }
 
 function App() {
@@ -52,7 +52,7 @@ function App() {
             }}
           />
 
-          <Stack.Screen
+          {/* <Stack.Screen
             name="CamaraScreen"
             component={CamareScreen}
             options={{
@@ -65,7 +65,7 @@ function App() {
                 fontWeight: "bold",
               },
             }}
-          />
+          /> */}
           <Stack.Screen
             name="Setup"
             component={Setup}
