@@ -1,5 +1,6 @@
 //React
 import { AppRegistry, View, Appearance, PlatformColor } from "react-native"
+import React, { useContext } from "react"
 // Expo App
 import { StatusBar } from "expo-status-bar"
 // App Name
@@ -8,7 +9,6 @@ import { name as appName } from "./app.json"
 import {
   MD3LightTheme as DefaultTheme,
   Provider as PaperProvider,
-  Text,
   withTheme,
 } from "react-native-paper"
 // Navigation
@@ -21,10 +21,11 @@ import Main from "./src/Apps/Screen/Home/Main"
 import Setup from "./src/Apps/Screen/Auth/Setup/Setup"
 import Login from "./src/Apps/Screen/Auth/Login/Login"
 import QRCamaraScreen from "./src/Apps/Screen/Camara/QRCamaraScreen"
+import { ApiProvider } from "./src/Apps/Components/contexts/loginProvider"
 
-function CamareScreen({ navigation }) {
-  return <QRCamaraScreen navigation={navigation} />
-}
+// function CamareScreen({ navigation }) {
+//   return <QRCamaraScreen navigation={navigation} />
+// }
 const theme = {
   ...DefaultTheme,
   roundness: 10,
@@ -39,20 +40,20 @@ const theme = {
 }
 
 function App() {
-  const { colors } = theme
   return (
-    <PaperProvider theme={theme}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Home"
-            component={Main}
-            options={{
-              headerShown: false,
-            }}
-          />
+    <loginProvider>
+      <PaperProvider theme={theme}>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen
+              name="Home"
+              component={Main}
+              options={{
+                headerShown: false,
+              }}
+            />
 
-          {/* <Stack.Screen
+            {/* <Stack.Screen
             name="CamaraScreen"
             component={CamareScreen}
             options={{
@@ -66,24 +67,25 @@ function App() {
               },
             }}
           /> */}
-          <Stack.Screen
-            name="Setup"
-            component={Setup}
-            options={{
-              headerShown: false,
-            }}
-          />
+            <Stack.Screen
+              name="Setup"
+              component={Setup}
+              options={{
+                headerShown: false,
+              }}
+            />
 
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
+    </loginProvider>
   )
 }
 export default withTheme(App)

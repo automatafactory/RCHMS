@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { StyleSheet, View } from "react-native"
 import { Searchbar } from "react-native-paper"
 import Navbar from "../Navbar/Navbar"
 import storage from "../../Components/storage"
 import BottomNavbar from "../Navbar/BottomNavbar"
+import { loginProvider } from "../../Components/contexts/loginProvider"
 
 const loadLoginState = async () => {
   return await storage.load({
@@ -12,7 +13,7 @@ const loadLoginState = async () => {
 }
 
 function Home({ navigation }) {
-  const [loginState, setLginState] = useState()
+  const [loginState, setLginState] = useContext(loginProvider)
   storage
     .load({
       key: "loginState",
