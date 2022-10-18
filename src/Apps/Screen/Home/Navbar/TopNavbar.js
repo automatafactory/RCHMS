@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Appbar } from "react-native-paper"
 import { Alert, StyleSheet, View } from "react-native"
-import storage from "../../Components/storage"
+import storage from "../../../Components/storage"
 
 const logout = async () => {
   await storage.remove({
@@ -26,7 +26,7 @@ const exit = () => {
   return true
 }
 
-const Navbar = ({ navigation }) => {
+export default function TopNavbar({ navigation }) {
   const _handleMore = () => console.log("Shown more")
   return (
     <Appbar.Header elevated mode="large">
@@ -41,5 +41,3 @@ const Navbar = ({ navigation }) => {
     </Appbar.Header>
   )
 }
-
-export default Navbar
