@@ -20,7 +20,7 @@ const BottomNavbar = () => {
   ])
 
   const renderScene = BottomNavigation.SceneMap({
-    home: Home,
+    home: ListProvider,
     camara: QRCamaraScreen,
   })
 

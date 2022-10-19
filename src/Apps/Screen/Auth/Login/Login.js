@@ -2,133 +2,127 @@ import { useEffect, useState } from "react"
 import { View, StyleSheet, StatusBar, Image, Alert } from "react-native"
 import {
   TextInput,
+  Portal,
+  Paragraph,
+  Provider,
   Button,
+  Dialog,
   Text,
   MD3LightTheme as DefaultTheme,
 } from "react-native-paper"
 
-import storage from "../../../Components/storage"
 import loginCheck from "./loginCheck"
 
-const rmServer = async ({ navigation }) => {
-  await storage.remove({
-    key: "api",
-  })
-  await navigation.navigate("Setup")
-}
+export default function Login(props) {
+  // console.log(props)
 
-const serverAlart = ({ navigation }) => {
-  Alert.alert(
-    "Warning",
-    "Do you really want to remove the current server address?",
-    [
-      {
-        text: "Yes",
-        onPress: () => rmServer({ navigation }),
-        style: "cancel",
-      },
-      {
-        text: "Cancel",
-        onPress: () => Alert.alert("Cancel Pressed"),
-        style: "cancel",
-      },
-    ]
-  )
-}
+  const navigation = props.navigation
+  const url = props.route.params.url
 
-export default function Login({ navigation }) {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [_api, _setApi] = useState(undefined)
-
-  storage
-    .load({
-      key: "api",
-      autoSync: true,
-      syncInBackground: true,
-      syncParams: {
-        someFlag: true,
-      },
-    })
-    .then((ret) => {
-      _setApi(ret.api)
-    })
-    .catch((err) => {
-      _setApi(undefined)
-    })
-  console.log("ii>>", _api)
-
-  // if (_api) {
+  const [secureText, setSecureText] = useState(true)
+  const [visible, setVisible] = useState(false)
+  console.log("username", username)
+  console.log("password", password)
   return (
-    <View style={styles.container}>
-      <View style={styles.row}>
-        <View style={styles.header}>
-          <Image
-            source={require("../../../../assets/icon.png")}
-            style={styles.img}
-          />
-          <Text style={styles.text} variant="displayLarge">
-            Login
-          </Text>
-        </View>
-      </View>
-      <View style={styles.row}>
-        <View style={styles.body}>
-          <TextInput
-            label="Email"
-            mode="outlined"
-            value={username}
-            onChangeText={(username) => setUsername(username)}
-          />
-          <TextInput
-            mode="outlined"
-            label="Password"
-            placeholder={"********"}
-            value={password}
-            secureTextEntry
-            right={<TextInput.Icon icon="eye" />}
-            onChangeText={(password) => setPassword(password)}
-          />
-
-          <Button
-            style={styles.margins}
-            mode="contained"
-            onPress={() => loginCheck(username, password, navigation)}
-          >
-            Login
-          </Button>
-          <View style={styles.row}>
-            <Button
-              style={styles.margins}
-              mode="text"
-              textColor={DefaultTheme.colors.secondary}
-              onPress={() => Alert.alert("Contact Admin for reset password")}
-            >
-              Forgot Password
-            </Button>
-            <Button
-              style={styles.margins}
-              textColor={DefaultTheme.colors.error}
-              mode="text"
-              onPress={() => serverAlart({ navigation })}
-            >
-              Update Server
-            </Button>
+    <Provider>
+      <View style={styles.container}>
+        <View style={styles.row}>
+          <View style={styles.header}>
+            <Image
+              source={require("../../../../assets/icon.png")}
+              style={styles.img}
+            />
+            <Text style={styles.text} variant="displayLarge">
+              Login
+            </Text>
           </View>
         </View>
-      </View>
-      <View style={styles.row}>
-        <View style={styles.footer}>
-          <Text>Power by React Native</Text>
-          <Text>Tanbin Hassan © 2022 </Text>
-          <StatusBar style="auto" />
+        <View style={styles.row}>
+          <View style={styles.body}>
+            <TextInput
+              label="Email"
+              mode="outlined"
+              value={username}
+              onChangeText={(username) => setUsername(username)}
+            />
+            <TextInput
+              mode="outlined"
+              label="Password"
+              placeholder={"********"}
+              value={password}
+              secureTextEntry={secureText}
+              right={
+                <TextInput.Icon
+                  icon="eye"
+                  onPress={() => setSecureText(!secureText)}
+                />
+              }
+              onChangeText={(password) => {
+                setPassword(password)
+              }}
+            />
+            <Text style={styles.server}>Current Server: {url}</Text>
+
+            <Button
+              style={styles.margins}
+              mode="contained"
+              onPress={() =>
+                loginCheck(
+                  username,
+                  password,
+                  url,
+                  props.route.params.setSignedIn
+                )
+              }
+            >
+              Login
+            </Button>
+            <View style={styles.row}>
+              <Button
+                style={styles.margins}
+                mode="text"
+                textColor={DefaultTheme.colors.secondary}
+                onPress={() => setVisible(true)}
+              >
+                Forgot Password
+              </Button>
+              <Button
+                style={styles.margins}
+                textColor={DefaultTheme.colors.error}
+                mode="text"
+                onPress={() => navigation.navigate("Setup")}
+              >
+                Change Server
+              </Button>
+            </View>
+          </View>
         </View>
+        <View style={styles.row}>
+          <View style={styles.footer}>
+            <Text>Power by React Native</Text>
+            <Text>Tanbin Hassan © 2022 </Text>
+            <StatusBar style="auto" />
+          </View>
+        </View>
+        <Portal>
+          <Dialog visible={visible} onDismiss={() => setVisible(false)}>
+            <Dialog.Icon icon="alert" />
+            <Dialog.Title>Alert</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph>
+                Please contact Admin or related branch for Password Reset
+              </Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setVisible(false)}>Done</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </View>
-    </View>
+    </Provider>
   )
-  // } else {
-  //   navigation.navigate("Setup")
-  // }
 }
 const styles = StyleSheet.create({
   container: {
@@ -144,7 +138,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItemsArr: "center",
   },
-
+  server: {
+    textAlign: "center",
+    paddingTop: 5,
+  },
   header: {
     flex: 1,
     width: "100%",

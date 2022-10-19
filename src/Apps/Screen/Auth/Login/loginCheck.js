@@ -1,31 +1,14 @@
 import React, { useContext, useState } from "react"
-import storage from "../../../Components/storage"
+import { useQuery } from "react-query"
+import { Alert } from "react-native"
 
-export default async function loginCheck(username, password, navigation) {
-  console.log("===============up=====================")
-  console.log(username, password)
-
-  //   const [_api, _setApi] = useState(undefined)
-  const _api = "192.168.1.2:8000"
-  //   storage
-  //     .load({
-  //       key: "api",
-  //       autoSync: true,
-  //       syncInBackground: true,
-  //       syncParams: {
-  //         someFlag: true,
-  //       },
-  //     })
-  //     .then((ret) => {
-  //       _setApi(ret.api)
-  //     })
-  //     .catch((err) => {
-  //       _setApi(undefined)
-  //     })
-
-  const url = `http://${_api}/oauth`
-  console.log(">>", url)
-  fetch(url, {
+export default async function loginCheck(username, password, url) {
+  const _url = `http://${url}/oauth`
+  const fetchPosts = async () => {
+    const { data } = await fatch.post(_url)
+    return data
+  }
+  fetch(_url, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -38,13 +21,7 @@ export default async function loginCheck(username, password, navigation) {
   })
     .then((response) => response.json())
     .then(async (payload) => {
-      await storage.save({
-        key: "loginState", // Note: Do not use underscore("_") in key!
-        data: {
-          token: payload.token,
-        },
-        expires: 1000 * 3600,
-      })
+      await Vault.save(payload.token)
     })
     .catch((error) => {
       throw new Error(error.message)

@@ -1,69 +1,86 @@
-// // Navigation
-// import { withTheme } from "react-native-paper"
-// import { createNativeStackNavigator } from "@react-navigation/native-stack"
-// import { NavigationContainer } from "@react-navigation/native"
-// const Stack = createNativeStackNavigator()
+// Navigation
+import { useState } from "react"
+import { withTheme, Text, Button } from "react-native-paper"
+import * as SecureStore from "expo-secure-store"
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import { NavigationContainer } from "@react-navigation/native"
+const Stack = createNativeStackNavigator()
 
-// // Components
-// import HomeScreen from "./Apps/Screen/Home/HomeScreen"
-// import Setup from "./Apps/Screen/Auth/Setup/Setup"
-// import Login from "./Apps/Screen/Auth/Login/Login"
-// import QRCamaraScreen from "./Apps/Screen/Camara/QRCamaraScreen"
+// Components
+import HomeScreen from "./Apps/Screen/Home/HomeScreen"
+import Setup from "./Apps/Screen/Auth/Setup/Setup"
+import Login from "./Apps/Screen/Auth/Login/Login"
+import QRCamaraScreen from "./Apps/Screen/Camara/QRCamaraScreen"
+import { get, save } from "./Apps/Components/vault"
 
-// const CamareScreen = ({ navigation }) => {
-//   return <QRCamaraScreen navigation={navigation} />
-// }
+const Main = ({ colors }) => {
+  const [isSignedIn, setSignedIn] = useState()
+  //   save("token", "htyhney6547nurtnju56nyyetuyt-neye5y")
+  //   save("url", "192.168.1.2:8000")
+  //   const isSignedIn = get("token")
+  //   const url = get("url")
 
-// const Main = ({ colors }) => {
-//   return (
-//     <NavigationContainer>
-//       <Stack.Navigator
-//         initialRouteName="Home"
-//         screenOptions={{
-//           headerMode: "screen",
-//           headerTintColor: "white",
-//           headerStyle: { backgroundColor: "tomato" },
-//         }}
-//       >
-//         <Stack.Screen
-//           name="Home"
-//           component={HomeScreen}
-//           options={{
-//             headerShown: false,
-//           }}
-//         />
+  const url = "192.168.1.2:8000"
 
-//         <Stack.Screen
-//           name="CamaraScreen"
-//           component={CamareScreen}
-//           options={{
-//             title: "Back to Home",
-//             headerStyle: {
-//               backgroundColor: colors.surfaceVariant,
-//             },
-//             headerTintColor: colors.onSurfaceVariant,
-//             headerTitleStyle: {
-//               fontWeight: "bold",
-//             },
-//           }}
-//         />
-//         <Stack.Screen
-//           name="Setup"
-//           component={Setup}
-//           options={{
-//             headerShown: false,
-//           }}
-//         />
+  console.log("> > > > >", isSignedIn)
+  console.log("> > > > >", url)
 
-//         <Stack.Screen
-//           name="Login"
-//           component={Login}
-//           options={{
-//             headerShown: false,
-//           }}
-//         />
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   )
-// }
-// export default withTheme(Main)
+  return (
+    <NavigationContainer>
+      {isSignedIn ? (
+        <Stack.Navigator>
+          <>
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="CamaraScreen"
+              component={QRCamaraScreen}
+              options={{
+                title: "Back to Home",
+                headerStyle: {
+                  backgroundColor: colors.surfaceVariant,
+                },
+                headerTintColor: colors.onSurfaceVariant,
+                headerTitleStyle: {
+                  fontWeight: "bold",
+                },
+              }}
+            />
+          </>
+        </Stack.Navigator>
+      ) : (
+        <Stack.Navigator initialRouteName={url ? Login : Setup}>
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{
+              headerShown: false,
+            }}
+            initialParams={{ url: url, setSignedIn: setSignedIn }}
+          />
+          <Stack.Screen
+            name="Setup"
+            component={Setup}
+            options={{
+              title: "Back Login",
+              headerStyle: {
+                backgroundColor: colors.surfaceVariant,
+              },
+              headerTintColor: colors.onSurfaceVariant,
+              headerTitleStyle: {
+                fontWeight: "bold",
+              },
+            }}
+            initialParams={{ url: url }}
+          />
+        </Stack.Navigator>
+      )}
+    </NavigationContainer>
+  )
+}
+export default withTheme(Main)

@@ -3,9 +3,10 @@ import {
   MD3LightTheme as DefaultTheme,
   Provider as PaperProvider,
 } from "react-native-paper"
+import { QueryClient, QueryClientProvider } from "react-query"
 
-// import Main from "./Main"
-import validition from "./Apps/validition"
+import Main from "./Main"
+const queryClient = new QueryClient()
 
 const theme = {
   ...DefaultTheme,
@@ -16,12 +17,13 @@ const theme = {
   // },
 }
 
-export default function ThemeProvider() {
+export default function moduleProvider() {
   const { colors } = theme
   return (
     <PaperProvider theme={theme}>
-      {/* <Main colors={colors} /> */}
-      <validition colors={colors} />
+      <QueryClientProvider client={queryClient}>
+        <Main colors={colors} />
+      </QueryClientProvider>
     </PaperProvider>
   )
 }
