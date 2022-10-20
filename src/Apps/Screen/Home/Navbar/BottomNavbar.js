@@ -1,13 +1,13 @@
-import * as React from "react"
+import { useState } from "react"
 import { BottomNavigation, Text } from "react-native-paper"
 import QRCamaraScreen from "../../Camara/QRCamaraScreen"
 import ListProvider from "../ListProvider"
 
-const BottomNavbar = () => {
-  const [index, setIndex] = React.useState(0)
-  const [routes] = React.useState([
+const BottomNavbar = ({ navigation }) => {
+  const [index, setIndex] = useState(0)
+  const [routes] = useState([
     {
-      key: "ListProvider",
+      key: "home",
       title: "Home",
       focusedIcon: "home",
       unfocusedIcon: "home-outline",

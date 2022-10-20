@@ -14,20 +14,20 @@ import QRCamaraScreen from "./Apps/Screen/Camara/QRCamaraScreen"
 import { get, save } from "./Apps/Components/vault"
 
 const Main = ({ colors }) => {
-  const [isSignedIn, setSignedIn] = useState()
+  const [token, setToken] = useState()
   //   save("token", "htyhney6547nurtnju56nyyetuyt-neye5y")
   //   save("url", "192.168.1.2:8000")
-  //   const isSignedIn = get("token")
+  //   const token = get("token")
   //   const url = get("url")
 
-  const url = "10.140.8.126:8000"
+  const url = "192.168.0.5:8000"
 
-  console.log("> > > > >", isSignedIn)
+  console.log("> > > > >", token)
   console.log("> > > > >", url)
 
   return (
     <NavigationContainer>
-      {isSignedIn ? (
+      {token ? (
         <Stack.Navigator>
           <>
             <Stack.Screen
@@ -36,6 +36,7 @@ const Main = ({ colors }) => {
               options={{
                 headerShown: false,
               }}
+              initialParams={{ url: url, token: token, setToken: setToken }}
             />
             <Stack.Screen
               name="CamaraScreen"
@@ -61,7 +62,7 @@ const Main = ({ colors }) => {
             options={{
               headerShown: false,
             }}
-            initialParams={{ url: url, setSignedIn: setSignedIn }}
+            initialParams={{ url: url, setToken: setToken }}
           />
           <Stack.Screen
             name="Setup"

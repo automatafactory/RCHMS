@@ -15,7 +15,7 @@ const theme = {
   // },
 }
 
-export default function moduleProvider() {
+export default function ModuleProvider() {
   const { colors } = theme
   return (
     <PaperProvider theme={theme}>

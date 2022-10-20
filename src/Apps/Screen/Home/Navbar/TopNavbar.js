@@ -26,7 +26,7 @@ const exit = () => {
   return true
 }
 
-export default function TopNavbar({ navigation }) {
+export default function TopNavbar({ navigation, setToken }) {
   const _handleMore = () => console.log("Shown more")
   return (
     <Appbar.Header elevated mode="large">
@@ -36,7 +36,7 @@ export default function TopNavbar({ navigation }) {
         icon="qrcode-scan"
         onPress={() => navigation.navigate("CamaraScreen")}
       /> */}
-      <Appbar.Action icon="power" onPress={logout} />
+      <Appbar.Action icon="power" onPress={() => setToken(false)} />
       <Appbar.Action icon="dots-vertical" />
     </Appbar.Header>
   )

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
+import { useMutation } from "react-query"
 import axios from "axios"
 import { View, StyleSheet, StatusBar, Image, Alert } from "react-native"
-import { useMutation, useQueryClient } from "react-query"
 import {
   TextInput,
   Portal,
@@ -12,10 +12,10 @@ import {
   Text,
   MD3LightTheme as DefaultTheme,
 } from "react-native-paper"
-import { authenticated } from "./loginFun"
 
 export default function Login(props) {
   const navigation = props.navigation
+  const setToken = props.route.params.setToken
   let url = props.route.params.url
   url = `http://${url}/oauth`
 
@@ -29,9 +29,23 @@ export default function Login(props) {
     password: password,
   }
 
+  const networkAuthenticated = async ({ url, body }) =>
+    await axios({
+      method: "post",
+      url: url,
+      body: body,
+    })
+  const { mutate, isLoading } = useMutation(networkAuthenticated, {
+    onSuccess: ({ data }) => {
+      setToken(data.token)
+      // console.log("🚀 ~ file: Login.js ~ line 40 ~ Login ~ payload", data.token)
+    },
+    onError: () => {
+      alert("there was an error")
+    },
+  })
   //  createPost({ url, username, password, setMessage }),
 
-  console.log(isLoading)
   return (
     <Provider>
       <View style={styles.container}>
@@ -76,7 +90,7 @@ export default function Login(props) {
               style={styles.margins}
               mode="contained"
               loading={isLoading}
-              onPress={() => mutate()}
+              onPress={() => mutate({ url, body })}
             >
               Login
             </Button>
