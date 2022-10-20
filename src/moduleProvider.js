@@ -3,10 +3,8 @@ import {
   MD3LightTheme as DefaultTheme,
   Provider as PaperProvider,
 } from "react-native-paper"
-import { QueryClient, QueryClientProvider } from "react-query"
 
 import Main from "./Main"
-const queryClient = new QueryClient()
 
 const theme = {
   ...DefaultTheme,
@@ -21,9 +19,7 @@ export default function moduleProvider() {
   const { colors } = theme
   return (
     <PaperProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <Main colors={colors} />
-      </QueryClientProvider>
+      <Main colors={colors} />
     </PaperProvider>
   )
 }

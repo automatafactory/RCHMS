@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
+import axios from "axios"
 import { View, StyleSheet, StatusBar, Image, Alert } from "react-native"
+import { useMutation, useQueryClient } from "react-query"
 import {
   TextInput,
   Portal,
@@ -10,21 +12,26 @@ import {
   Text,
   MD3LightTheme as DefaultTheme,
 } from "react-native-paper"
-
-import loginCheck from "./loginCheck"
+import { authenticated } from "./loginFun"
 
 export default function Login(props) {
-  // console.log(props)
-
   const navigation = props.navigation
-  const url = props.route.params.url
+  let url = props.route.params.url
+  url = `http://${url}/oauth`
 
+  // State
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [secureText, setSecureText] = useState(true)
   const [visible, setVisible] = useState(false)
-  console.log("username", username)
-  console.log("password", password)
+  const body = {
+    username: username,
+    password: password,
+  }
+
+  //  createPost({ url, username, password, setMessage }),
+
+  console.log(isLoading)
   return (
     <Provider>
       <View style={styles.container}>
@@ -68,14 +75,8 @@ export default function Login(props) {
             <Button
               style={styles.margins}
               mode="contained"
-              onPress={() =>
-                loginCheck(
-                  username,
-                  password,
-                  url,
-                  props.route.params.setSignedIn
-                )
-              }
+              loading={isLoading}
+              onPress={() => mutate()}
             >
               Login
             </Button>

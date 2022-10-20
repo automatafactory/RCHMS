@@ -4,13 +4,17 @@ import { AppRegistry } from "react-native"
 import { StatusBar } from "expo-status-bar"
 // App Name
 import { name as appName } from "./app.json"
-import moduleProvider from "./src/moduleProvider"
+import ModuleProvider from "./src/ModuleProvider"
+import { QueryClient, QueryClientProvider } from "react-query"
+const queryClient = new QueryClient()
 
 export default function App() {
   return (
     <>
-      <StatusBar />
-      <moduleProvider />
+      <QueryClientProvider client={queryClient}>
+        <StatusBar />
+        <ModuleProvider />
+      </QueryClientProvider>
     </>
   )
 }

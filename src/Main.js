@@ -20,7 +20,7 @@ const Main = ({ colors }) => {
   //   const isSignedIn = get("token")
   //   const url = get("url")
 
-  const url = "192.168.1.2:8000"
+  const url = "10.140.8.126:8000"
 
   console.log("> > > > >", isSignedIn)
   console.log("> > > > >", url)
