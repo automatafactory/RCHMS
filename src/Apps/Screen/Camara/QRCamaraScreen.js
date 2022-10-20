@@ -57,7 +57,6 @@ export default function QRCamaraScreen() {
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           style={styles.camara}
         />
-        {/* </View> */}
       </View>
       <View style={styles.row}>
         <Text style={styles.text}>{text}</Text>

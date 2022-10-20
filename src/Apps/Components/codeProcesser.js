@@ -2,70 +2,39 @@ import moment from "moment"
 import storage from "./storage"
 import uuid from "react-native-uuid"
 
-export default async function codeProcesser(data) {
+export default function codeProcesser(qrdata) {
   const _date = new Date()
-  let _id = uuid.v4()
-  // console.log("codeProcesser", data)
+  let _id = uuid.v1()
+  console.log("codeProcesser", qrdata)
 
-  let serialtag = await idExtracter(data)
+  let _serialtag = idExtracter(qrdata)
 
-  const _data = JSON.stringify({
+  const _data = {
     id: _id,
+    serial: _serialtag ? _serialtag : "invalid",
     date: _date,
-    tag: serialtag,
     status: "pending",
-  })
+  }
+  // const _data = JSON.stringify({
+  //   id: _id,
+  //   tag: _serialtag,
+  //   date: _date,
+  //   status: "pending",
+  // })
+  // storage.remove({
+  //   key: "tableData",
+  // })
 
   storage.save({
     key: "tableData",
-    id: data,
+    id: "data",
     data: _data,
     expires: null,
   })
 
-  //   await storage
-  //     .load({
-  //       key: "productdata",
-  //     })
-  //     .then((data) => {
-  //       console.log(data)
-  //     })
-  //     .catch(async (err) => {
-  //       console.warn(err.message)
-  //       switch (err.name) {
-  //         case "NotFoundError":
-  //           await storage.save({
-  //             key: "productdata", // Note: Do not use underscore("_") in key!
-  //             data: {
-  //               id: _id,
-  //               date: moment(_date).format("MMMM Do YYYY, h:mm:ss a"),
-  //               tag: serialtag,
-  //               status: "pending",
-  //             },
-  //           })
-  //           resolve(`Product added ${serialtag} successfully`)
-  //           break
-  //         case "ExpiredError":
-  //           await storage.save({
-  //             key: "productdata", // Note: Do not use underscore("_") in key!
-  //             data: {
-  //               date: moment(_date).format("MMMM Do YYYY, h:mm:ss a"),
-  //               id: serialtag,
-  //               status: _status,
-  //             },
-  //             // if expires not specified, the defaultExpires will be applied instead.
-  //             // if set to null, then it will never expire.
-  //             expires: 1000 * 3600,
-  //           })
-  //           resolve(`Product added ${serialtag} successfully`)
-  //           break
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       reject(`Error ${error} `)
-  //       console.error(error)
-  //     })
-  // })
+  storage.getAllDataForKey("tableData").then((data) => {
+    console.log(data)
+  })
 }
 
 const idExtracter = (raw) => {
