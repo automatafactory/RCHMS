@@ -1,25 +1,37 @@
-import * as React from "react"
+import { useState } from "react"
+import { Appearance } from "react-native"
 import {
-  MD3LightTheme as DefaultTheme,
+  MD3DarkTheme,
+  MD3LightTheme,
   Provider as PaperProvider,
 } from "react-native-paper"
 
 import Main from "./Main"
 
-const theme = {
-  ...DefaultTheme,
-  // colors: {
-  //   ...DefaultTheme.colors,
-  //   primary: "dodgerblue",
-  //   secondary: "blue",
-  // },
-}
+// const theme = {
+//   ...DefaultTheme,
+//   // colors: {
+//   //   ...DefaultTheme.colors,
+//   //   primary: "dodgerblue",
+//   //   secondary: "blue",
+//   // },
+// }
 
 export default function ModuleProvider() {
-  const { colors } = theme
+  const [theme, setTheme] = useState(MD3LightTheme)
+  // const colorScheme = Appearance.getColorScheme()
+  // Appearance.addChangeListener(({ colorScheme }) => {
+  //   console.log(colorScheme)
+  // })
+  // console.log(colorScheme)
+
+  // if (colorScheme === "dark") {
+  //   setTheme(MD3DarkTheme)
+  // }
+
   return (
     <PaperProvider theme={theme}>
-      <Main colors={colors} />
+      <Main theme={theme} />
     </PaperProvider>
   )
 }

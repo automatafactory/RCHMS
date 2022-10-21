@@ -1,23 +1,34 @@
-import { useContext, useEffect, useState } from "react"
-import { StyleSheet, View } from "react-native"
-import { Provider, Menu, Divider, Button } from "react-native-paper"
+import { useEffect, useState } from "react"
+import { Provider } from "react-native-paper"
 import TopNavbar from "./Navbar/TopNavbar"
 import BottomNavbar from "./Navbar/BottomNavbar"
+import storage from "../../Components/storage"
 
 function HomeScreen(props) {
   const navigation = props.navigation
   const api = props.route.params.url
   const token = props.route.params.token
+  const theme = props.route.params.theme
+
+  const [history, setHistory] = useState()
+
+  useEffect(() => {
+    storage.getAllDataForKey("tableData").then((payload) => {
+      setHistory(!payload ? payload : payload.reverse())
+    })
+  }, [])
 
   return (
-    <Provider>
+    <Provider theme={theme}>
       <TopNavbar
         navigation={navigation}
-        // openMenu={openMenu}
         setToken={props.route.params.setToken}
       />
-
-      <BottomNavbar navigation={navigation} />
+      <BottomNavbar
+        navigation={navigation}
+        history={history}
+        setHistory={setHistory}
+      />
     </Provider>
   )
 }

@@ -4,7 +4,7 @@ import { Text, Button, MD3LightTheme as DefaultTheme } from "react-native-paper"
 import codeProcesser from "../../Components/codeProcesser"
 import { Camera } from "expo-camera"
 
-export default function QRCamaraScreen() {
+export default function QRCamaraScreen({ setHistory }) {
   const [hasPermission, setHasPermission] = useState(null)
   const [scanned, setScanned] = useState(false)
   const [text, setText] = useState("Not yet scanned")
@@ -27,7 +27,6 @@ export default function QRCamaraScreen() {
     setText(data)
     console.log("Type: " + type + "\nData: " + data)
   }
-
   // Check permissions and return the screens
   if (hasPermission === null) {
     return (
@@ -67,7 +66,7 @@ export default function QRCamaraScreen() {
             mode="contained"
             icon="send"
             style={styles.btn}
-            onPress={() => codeProcesser(text)}
+            onPress={() => codeProcesser(text, setHistory)}
           >
             Submit
           </Button>

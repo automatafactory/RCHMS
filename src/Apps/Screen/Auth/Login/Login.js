@@ -10,12 +10,14 @@ import {
   Button,
   Dialog,
   Text,
-  MD3LightTheme as DefaultTheme,
+  MD3DarkTheme as Theme,
 } from "react-native-paper"
 
 export default function Login(props) {
   const navigation = props.navigation
   const setToken = props.route.params.setToken
+  const colors = props.route.params.colors
+
   let url = props.route.params.url
   url = `http://${url}/oauth`
 
@@ -47,7 +49,7 @@ export default function Login(props) {
   //  createPost({ url, username, password, setMessage }),
 
   return (
-    <Provider>
+    <Provider theme={Theme}>
       <View style={styles.container}>
         <View style={styles.row}>
           <View style={styles.header}>
@@ -98,14 +100,14 @@ export default function Login(props) {
               <Button
                 style={styles.margins}
                 mode="text"
-                textColor={DefaultTheme.colors.secondary}
+                textColor={colors.secondary}
                 onPress={() => setVisible(true)}
               >
                 Forgot Password
               </Button>
               <Button
                 style={styles.margins}
-                textColor={DefaultTheme.colors.error}
+                textColor={colors.error}
                 mode="text"
                 onPress={() => navigation.navigate("Setup")}
               >
@@ -141,7 +143,8 @@ export default function Login(props) {
 }
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: DefaultTheme.colors.surfaceVariant,
+    // backgroundColor: Theme.colors.surfaceVariant,
+    backgroundColor: "#000",
     width: "100%",
     flex: 1,
     flexDirection: "column",
@@ -192,8 +195,8 @@ const styles = StyleSheet.create({
     marginTop: "10%",
   },
   text: {
-    fontFamily: DefaultTheme.colors.fontFamily,
-    color: DefaultTheme.colors.primary,
+    fontFamily: Theme.colors.fontFamily,
+    color: Theme.colors.primary,
     textAlign: "center",
   },
   body: {

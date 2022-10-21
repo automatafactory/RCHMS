@@ -1,9 +1,10 @@
 // Navigation
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { withTheme, Text, Button } from "react-native-paper"
 import * as SecureStore from "expo-secure-store"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { NavigationContainer } from "@react-navigation/native"
+import storage from "./Apps/Components/storage"
 const Stack = createNativeStackNavigator()
 
 // Components
@@ -13,17 +14,16 @@ import Login from "./Apps/Screen/Auth/Login/Login"
 import QRCamaraScreen from "./Apps/Screen/Camara/QRCamaraScreen"
 import { get, save } from "./Apps/Components/vault"
 
-const Main = ({ colors }) => {
+const Main = ({ theme }) => {
   const [token, setToken] = useState()
-  //   save("token", "htyhney6547nurtnju56nyyetuyt-neye5y")
-  //   save("url", "192.168.1.2:8000")
-  //   const token = get("token")
-  //   const url = get("url")
-
   const url = "192.168.0.5:8000"
+  // const [history, setHistory] = useState()
 
-  console.log("> > > > >", token)
-  console.log("> > > > >", url)
+  // useEffect(() => {
+  //   storage.getAllDataForKey("tableData").then((payload) => {
+  //     setHistory(!payload ? payload : payload.reverse())
+  //   })
+  // }, [])
 
   return (
     <NavigationContainer>
@@ -36,7 +36,14 @@ const Main = ({ colors }) => {
               options={{
                 headerShown: false,
               }}
-              initialParams={{ url: url, token: token, setToken: setToken }}
+              initialParams={{
+                url: url,
+                token: token,
+                setToken: setToken,
+                theme: theme,
+                // history: history,
+                // setHistory: setHistory,
+              }}
             />
             <Stack.Screen
               name="CamaraScreen"
@@ -44,9 +51,9 @@ const Main = ({ colors }) => {
               options={{
                 title: "Back to Home",
                 headerStyle: {
-                  backgroundColor: colors.surfaceVariant,
+                  backgroundColor: theme.colors.surfaceVariant,
                 },
-                headerTintColor: colors.onSurfaceVariant,
+                headerTintColor: theme.colors.onSurfaceVariant,
                 headerTitleStyle: {
                   fontWeight: "bold",
                 },
@@ -62,7 +69,11 @@ const Main = ({ colors }) => {
             options={{
               headerShown: false,
             }}
-            initialParams={{ url: url, setToken: setToken }}
+            initialParams={{
+              url: url,
+              setToken: setToken,
+              colors: theme.colors,
+            }}
           />
           <Stack.Screen
             name="Setup"
@@ -70,14 +81,14 @@ const Main = ({ colors }) => {
             options={{
               title: "Back Login",
               headerStyle: {
-                backgroundColor: colors.surfaceVariant,
+                backgroundColor: theme.colors.surfaceVariant,
               },
-              headerTintColor: colors.onSurfaceVariant,
+              headerTintColor: theme.colors.onSurfaceVariant,
               headerTitleStyle: {
                 fontWeight: "bold",
               },
             }}
-            initialParams={{ url: url }}
+            initialParams={{ url: url, theme: theme }}
           />
         </Stack.Navigator>
       )}

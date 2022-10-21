@@ -27,6 +27,13 @@ const exit = () => {
   return true
 }
 
+const deleteAll = async () => {
+  await storage
+    .clearMap()
+    .then(() => console.log("Deleting Data"))
+    .catch((e) => console.log(e))
+}
+
 export default function TopNavbar({ navigation, setToken }) {
   const [visible, setVisible] = useState(true)
   const openMenu = () => setVisible(true)
@@ -41,6 +48,12 @@ export default function TopNavbar({ navigation, setToken }) {
         icon="qrcode-scan"
         onPress={() => navigation.navigate("CamaraScreen")}
       /> */}
+        <Appbar.Action
+          icon="delete"
+          onPress={() => {
+            deleteAll()
+          }}
+        />
 
         <Menu
           visible={visible}

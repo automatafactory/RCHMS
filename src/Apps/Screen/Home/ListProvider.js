@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, View } from "react-native"
+import { FlatList, StyleSheet, SafeAreaView } from "react-native"
 import {
   Avatar,
   Button,
@@ -7,35 +7,36 @@ import {
   Title,
   Paragraph,
 } from "react-native-paper"
-import storage from "../../Components/storage"
+import moment from "moment"
 
-export default function ListProvider() {
-  const data = storage.getAllDataForKey("tableData").then((data) => {
-    console.log(data)
-    return data
-  })
+export default function ListProvider({ history, setHistory }) {
+  return (
+    <SafeAreaView>
+      <FlatList
+        inverted="true"
+        data={history}
+        renderItem={({ item }) => CardComponent(item)}
+      />
+    </SafeAreaView>
+  )
+}
+
+const CardComponent = (item) => {
   const LeftContent = (props) => <Avatar.Icon {...props} icon="qrcode-scan" />
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={data}
-        renderItem={({ item }) => (
-          <Card style={styles.item}>
-            <Card.Title title={item.id} left={LeftContent} />
-            <Card.Content>
-              <Title>{item.serial}</Title>
-              <Paragraph>{item.body}</Paragraph>
-              <Text>{item.date}</Text>
-            </Card.Content>
-            <Card.Actions>
-              <Button>Ok</Button>
-            </Card.Actions>
-          </Card>
-        )}
-      />
-    </View>
+    <Card mode="elevated" style={{ marginTop: 10 }}>
+      <Card.Title title={item.serial} left={LeftContent} />
+      <Card.Content>
+        <Title>Scan ID: {item.id}</Title>
+        <Paragraph>{item.data}</Paragraph>
+
+        <Text>Scan Date: {moment(item.date).startOf("hour").fromNow()}</Text>
+      </Card.Content>
+      <Card.Actions>
+        <Button>Recived</Button>
+      </Card.Actions>
+    </Card>
   )
-  // })
 }
 
 const styles = StyleSheet.create({

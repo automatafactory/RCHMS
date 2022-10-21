@@ -1,44 +1,35 @@
 import moment from "moment"
 import storage from "./storage"
-import uuid from "react-native-uuid"
+import { Alart } from "react-native"
 
-export default function codeProcesser(qrdata) {
+export default function codeProcesser(qrdata, setHistory) {
   const _date = new Date()
-  let _id = uuid.v1()
-  console.log("codeProcesser", qrdata)
-
+  let _id = generateUUID(16)
   let _serialtag = idExtracter(qrdata)
 
   const _data = {
     id: _id,
     serial: _serialtag ? _serialtag : "invalid",
+    data: qrdata,
     date: _date,
     status: "pending",
   }
-  // const _data = JSON.stringify({
-  //   id: _id,
-  //   tag: _serialtag,
-  //   date: _date,
-  //   status: "pending",
-  // })
-  // storage.remove({
-  //   key: "tableData",
-  // })
 
   storage.save({
     key: "tableData",
-    id: "data",
+    id: _id,
     data: _data,
     expires: null,
   })
-
+  // storage.clearMap()
   storage.getAllDataForKey("tableData").then((data) => {
     console.log(data)
+    console.log(setHistory)
+    setHistory(data)
   })
 }
 
 const idExtracter = (raw) => {
-  console.log(raw)
   raw = raw.split(/\r?\n/)
   raw = Object.values(raw)
   return raw[5]
@@ -62,4 +53,12 @@ const networkproccess = () => {
         console.log(payload)
       })
   })
+}
+const generateUUID = (digits) => {
+  let str = "123456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVXZ"
+  let uuid = []
+  for (let i = 0; i < digits; i++) {
+    uuid.push(str[Math.floor(Math.random() * str.length)])
+  }
+  return uuid.join("")
 }
