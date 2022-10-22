@@ -19,15 +19,15 @@ import Main from "./Main"
 
 export default function ModuleProvider() {
   const [theme, setTheme] = useState(MD3LightTheme)
-  // const colorScheme = Appearance.getColorScheme()
-  // Appearance.addChangeListener(({ colorScheme }) => {
-  //   console.log(colorScheme)
-  // })
-  // console.log(colorScheme)
+  const colorScheme = Appearance.getColorScheme()
+  Appearance.addChangeListener(({ colorScheme }) => {
+    console.log(colorScheme)
+  })
+  console.log(colorScheme)
 
-  // if (colorScheme === "dark") {
-  //   setTheme(MD3DarkTheme)
-  // }
+  if (colorScheme === "dark") {
+    setTheme(MD3DarkTheme)
+  }
 
   return (
     <PaperProvider theme={theme}>

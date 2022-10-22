@@ -1,67 +1,56 @@
 import React, { useState, useEffect } from "react"
-import { View, StyleSheet } from "react-native"
-import { Text, Button, MD3LightTheme as DefaultTheme } from "react-native-paper"
-import codeProcesser from "../../Components/codeProcesser"
+import { Text, View, StyleSheet } from "react-native"
+import { Button } from "react-native-paper"
+import { BarCodeScanner } from "expo-barcode-scanner"
 import { Camera } from "expo-camera"
 
-export default function QRCamaraScreen({ setHistory }) {
+export default function App() {
   const [hasPermission, setHasPermission] = useState(null)
   const [scanned, setScanned] = useState(false)
-
-  const askForCameraPermission = () => {
-    ;(async () => {
-      const { status } = await Camera.requestPermissionsAsync()
-      setHasPermission(status === "granted")
-    })()
-  }
-
-  // Request Camera Permission
+  const [facingCamara, setFacingCamara] = useState("back")
   useEffect(() => {
-    askForCameraPermission()
+    const getBarCodeScannerPermissions = async ({ setHistory }) => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync()
+      setHasPermission(status === "granted")
+    }
+    getBarCodeScannerPermissions()
   }, [])
 
-  // What happens when we scan the bar code
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true)
     codeProcesser(data, setHistory)
-    console.log("Type: " + type + "\nData: " + data)
-  }
-  // Check permissions and return the screens
-  if (hasPermission === null) {
-    return (
-      <View style={styles.container}>
-        <Text>Requesting for camera permission</Text>
-      </View>
-    )
-  }
-  if (hasPermission === false) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ margin: 10 }}>No access to camera</Text>
-        <Button
-          title={"Allow Camera"}
-          onPress={() => askForCameraPermission()}
-        />
-      </View>
-    )
+    alert(`Bar code with type ${type} and data ${data} has been scanned!`)
   }
 
-  // Return the View
+  if (hasPermission === null) {
+    return <Text>Requesting for camera permission</Text>
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>
+  }
+
   return (
     <View style={styles.container}>
       <Camera
+        // barCodeScannerSettings={{
+        //   barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        // }}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        type={facingCamara}
         style={StyleSheet.absoluteFillObject}
       />
+      {/* {scanned && (
+        <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />
+      )} */}
 
       <View style={styles.row}>
         <Button
           mode="contained"
-          icon="send"
+          icon="disk"
           style={styles.btn}
           onPress={() => codeProcesser(text, setHistory)}
         >
-          Submit
+          Save
         </Button>
 
         <Button
@@ -93,9 +82,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignContent: "center",
-  },
-
-  btn: {
-    margin: 10,
   },
 })

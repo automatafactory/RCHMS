@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react"
 import { BottomNavigation, Text } from "react-native-paper"
 import QRCamaraScreen from "../../Camara/QRCamaraScreen"
+import CamaraApp from "../../Camara/ExpoCamraraTest"
+
 import ListProvider from "../ListProvider"
 
 const BottomNavbar = ({ navigation, history, setHistory }) => {
-  // const camaraScreen = QRCamaraScreen(setHistory)
-  // const cardScreen = ListProvider(history, setHistory)
-
   const [index, setIndex] = useState(0)
   const [routes] = useState([
     {
@@ -21,11 +20,6 @@ const BottomNavbar = ({ navigation, history, setHistory }) => {
       focusedIcon: "qrcode-scan",
     },
   ])
-
-  // const renderScene = BottomNavigation.SceneMap({
-  //   home: cardScreen,
-  //   camara: camaraScreen,
-  // })
 
   return (
     <BottomNavigation

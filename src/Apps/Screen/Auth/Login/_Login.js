@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useMutation } from "react-query"
 import axios from "axios"
-import { View, StyleSheet, StatusBar, Image, ScrollView } from "react-native"
+import { View, StyleSheet, StatusBar, Image, Alert } from "react-native"
 import {
   TextInput,
   Portal,
@@ -17,68 +17,36 @@ export default function Login(props) {
   const navigation = props.navigation
   const setToken = props.route.params.setToken
   const colors = props.route.params.colors
-  const url = `http://${props.route.params.url}/oauth`
-  /* --------------------------------------------------
 
-                      State   
+  let url = props.route.params.url
+  url = `http://${url}/oauth`
 
-  ----------------------------------------------------- */
-  const [alartTitel, setAlartTitel] = useState("Alart")
-  const [alartMassaage, setAlartMassaage] = useState()
-  const [username, setUsername] = useState()
-  const [password, setPassword] = useState()
+  // State
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   const [secureText, setSecureText] = useState(true)
   const [visible, setVisible] = useState(false)
-
-  const networkAuthenticated = async ({ url, body }) => {
-    var config = {
-      method: "post",
-      url: url,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: JSON.stringify(body),
-    }
-    await axios(config)
+  const body = {
+    username: username,
+    password: password,
   }
 
-  // const networkAuthenticated = async ({ url, body }) =>
-  //   await fetch(url, {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(body),
-  //     redirect: "follow",
-  //   })
-
-  // const { isLoading, isSuccess, isError, data, error, mutate } = useMutation(
-  //   networkAuthenticated,
-  //   {
-  //     onSuccess: async (data, variables, context) => {
-  //       if (data.status !== 200) {
-  //         setVisible(true)
-  //         setAlartTitel(`Login Error`)
-  //         setAlartMassaage(data.massage)
-  //       }
-  //     },
-
+  const networkAuthenticated = async ({ url, body }) =>
+    await axios({
+      method: "post",
+      url: url,
+      body: body,
+    })
   const { mutate, isLoading } = useMutation(networkAuthenticated, {
-    onSuccess: async (data) => {
-      // setToken(data.token)
-      console.log("🚀 ~ file: Login.js ~ line 40 ~ Login ~ payload", await data)
+    onSuccess: ({ data }) => {
+      setToken(data.token)
+      // console.log("🚀 ~ file: Login.js ~ line 40 ~ Login ~ payload", data.token)
     },
-    onError: (error) => {
-      error = error.message
-      setVisible(true)
-      setAlartTitel(`Login Error`)
-      setAlartMassaage(error)
-      console.log("e>>", error)
-    },
-    retry: () => {
-      setVisible(true)
-      setAlartTitel(`Alart`)
-      setAlartMassaage("Retrying")
+    onError: () => {
+      alert("there was an error")
     },
   })
+  //  createPost({ url, username, password, setMessage }),
 
   return (
     <Provider theme={Theme}>
@@ -124,17 +92,7 @@ export default function Login(props) {
               style={styles.margins}
               mode="contained"
               loading={isLoading}
-              onPress={() =>
-                loginCheck({
-                  url,
-                  username,
-                  password,
-                  setVisible,
-                  setAlartTitel,
-                  setAlartMassaage,
-                  mutate,
-                })
-              }
+              onPress={() => mutate({ url, body })}
             >
               Login
             </Button>
@@ -143,13 +101,7 @@ export default function Login(props) {
                 style={styles.margins}
                 mode="text"
                 textColor={colors.secondary}
-                onPress={() => {
-                  setVisible(true)
-                  setAlartTitel(`Notice`)
-                  setAlartMassaage(
-                    "Please contact Admin or related branch for Password Reset"
-                  )
-                }}
+                onPress={() => setVisible(true)}
               >
                 Forgot Password
               </Button>
@@ -172,15 +124,13 @@ export default function Login(props) {
           </View>
         </View>
         <Portal>
-          <Dialog
-            style={{ maxHeight: "75%" }}
-            visible={visible}
-            onDismiss={() => setVisible(false)}
-          >
+          <Dialog visible={visible} onDismiss={() => setVisible(false)}>
             <Dialog.Icon icon="alert" />
-            <Dialog.Title>{alartTitel}</Dialog.Title>
+            <Dialog.Title>Alert</Dialog.Title>
             <Dialog.Content>
-              <Paragraph>{alartMassaage}</Paragraph>
+              <Paragraph>
+                Please contact Admin or related branch for Password Reset
+              </Paragraph>
             </Dialog.Content>
             <Dialog.Actions>
               <Button onPress={() => setVisible(false)}>Done</Button>
@@ -191,35 +141,6 @@ export default function Login(props) {
     </Provider>
   )
 }
-
-const loginCheck = ({
-  url,
-  username,
-  password,
-  setVisible,
-  setAlartTitel,
-  setAlartMassaage,
-  mutate,
-}) => {
-  if (
-    username === "" ||
-    password === "" ||
-    username === undefined ||
-    password === undefined
-  ) {
-    setVisible(true)
-    setAlartTitel(`Alart`)
-    setAlartMassaage("Username, Password cant be empty")
-  } else {
-    const body = {
-      username: username,
-      password: password,
-    }
-
-    mutate({ url, body })
-  }
-}
-
 const styles = StyleSheet.create({
   container: {
     // backgroundColor: Theme.colors.surfaceVariant,

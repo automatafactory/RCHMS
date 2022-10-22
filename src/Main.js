@@ -16,14 +16,7 @@ import { get, save } from "./Apps/Components/vault"
 
 const Main = ({ theme }) => {
   const [token, setToken] = useState()
-  const url = "192.168.0.5:8000"
-  // const [history, setHistory] = useState()
-
-  // useEffect(() => {
-  //   storage.getAllDataForKey("tableData").then((payload) => {
-  //     setHistory(!payload ? payload : payload.reverse())
-  //   })
-  // }, [])
+  const url = "192.168.0.5:7000"
 
   return (
     <NavigationContainer>
@@ -41,8 +34,6 @@ const Main = ({ theme }) => {
                 token: token,
                 setToken: setToken,
                 theme: theme,
-                // history: history,
-                // setHistory: setHistory,
               }}
             />
             <Stack.Screen
