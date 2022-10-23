@@ -1,4 +1,5 @@
-import { FlatList, StyleSheet, SafeAreaView } from "react-native"
+import { useState } from "react"
+import { FlatList, Animated, StyleSheet, SafeAreaView } from "react-native"
 import {
   Avatar,
   Button,
@@ -6,22 +7,59 @@ import {
   Text,
   Title,
   Paragraph,
+  AnimatedFAB,
+  Provider,
 } from "react-native-paper"
 import moment from "moment"
+import React from "react"
+import { Background } from "@react-navigation/elements"
 
-export default function ListProvider({ history, setHistory }) {
+export default function ListProvider({
+  animateFrom,
+  navigation,
+  history,
+  setHistory,
+  visible,
+  theme,
+}) {
+  const [isExtended, setIsExtended] = useState(true)
+  // const background = theme.colors.background
+
+  const onScroll = ({ nativeEvent }) => {
+    const currentScrollPosition = Math.floor(nativeEvent?.contentOffset?.y) ?? 0
+    setIsExtended(currentScrollPosition <= 0)
+  }
+  const fabStyle = { [animateFrom]: 16 }
+
   return (
-    <SafeAreaView>
-      <FlatList
-        inverted="true"
-        data={history}
-        renderItem={({ item }) => CardComponent(item)}
+    <Provider>
+      <SafeAreaView
+        style={{
+          backgroundColor: theme.colors.backdrop,
+        }}
+      >
+        <FlatList
+          onScroll={onScroll}
+          inverted="true"
+          data={history}
+          renderItem={({ item }) => CardComponent(item, theme)}
+        />
+      </SafeAreaView>
+      <AnimatedFAB
+        icon={"qrcode-scan"}
+        label={"Scan"}
+        extended={isExtended}
+        onPress={() => navigation.navigate("CamaraScreen")}
+        visible={true}
+        animateFrom={"right"}
+        variant={"tertiary"}
+        style={[styles.fabStyle, styles, fabStyle]}
       />
-    </SafeAreaView>
+    </Provider>
   )
 }
 
-const CardComponent = (item) => {
+const CardComponent = (item, theme) => {
   const LeftContent = (props) => <Avatar.Icon {...props} icon="qrcode-scan" />
   return (
     <Card mode="elevated" style={{ marginTop: 10 }}>
@@ -41,10 +79,17 @@ const CardComponent = (item) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     paddingTop: 22,
+    flexGrow: 1,
   },
   item: {
-    marginTop: 10,
+    // marginTop: 10,
+  },
+  fabStyle: {
+    bottom: 16,
+    right: 16,
+    position: "absolute",
+    marginBottom: "5%",
   },
 })

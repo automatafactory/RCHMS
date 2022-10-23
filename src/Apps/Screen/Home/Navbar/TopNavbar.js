@@ -1,13 +1,14 @@
 import { useState } from "react"
-import { Appbar, Avatar, Menu, Divider, Button } from "react-native-paper"
+import { Appbar, Text, Menu, Divider, Button } from "react-native-paper"
 import { Alert, StyleSheet, View } from "react-native"
-import storage from "../../../Components/storage"
-import Setup from "../../Auth/Setup/Setup"
-
+import * as SecureStore from "expo-secure-store"
 const logout = async () => {
-  await storage.remove({
-    key: "loginState",
-  })
+  try {
+    await SecureStore.deleteItemAsync("token")
+    setToken(false)
+  } catch (e) {
+    Alert.alert("Logout Error", e)
+  }
 }
 
 const exit = () => {
@@ -34,26 +35,33 @@ const deleteAll = async () => {
     .catch((e) => console.log(e))
 }
 
-export default function TopNavbar({ navigation, setToken }) {
+export default function TopNavbar({ navigation, setToken, theme }) {
   const [visible, setVisible] = useState(true)
   const openMenu = () => setVisible(true)
   const closeMenu = () => setVisible(false)
-  const _handleMore = () => console.log("Shown more")
   return (
     <>
-      <Appbar.Header elevated mode="large">
+      <Appbar.Header
+        elevated="true"
+        dark={true}
+        mode="large"
+        // style={{ backgroundColor: theme.colors.primary }}
+      >
         <Appbar.BackAction onPress={() => exit()} />
-        <Appbar.Content title="Hampo" />
-        {/* <Appbar.Action
-        icon="qrcode-scan"
-        onPress={() => navigation.navigate("CamaraScreen")}
-      /> */}
-        <Appbar.Action
-          icon="delete"
-          onPress={() => {
-            deleteAll()
-          }}
+        <Appbar.Content
+          title={
+            <Text
+              variant="headlineLarge"
+              style={{ color: theme.colors.primary }}
+            >
+              Hampo
+            </Text>
+          }
         />
+        {/* <Appbar.Action
+          icon="qrcode-scan"
+          onPress={() => navigation.navigate("CamaraScreen")}
+        /> */}
 
         <Menu
           visible={visible}
@@ -64,8 +72,15 @@ export default function TopNavbar({ navigation, setToken }) {
           {/* <Menu.Item onPress={navigation.navigate("Setup")} title="Item 2" /> */}
           <Divider />
           <Menu.Item
-            icon="power"
-            onPress={() => setToken(false)}
+            leadingIcon="delete"
+            onPress={() => {
+              deleteAll()
+            }}
+            title="Reset"
+          />
+          <Menu.Item
+            leadingIcon="power"
+            onPress={() => logout()}
             title="Log out"
           />
         </Menu>

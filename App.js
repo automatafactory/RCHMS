@@ -4,7 +4,7 @@ import { AppRegistry } from "react-native"
 import { StatusBar } from "expo-status-bar"
 // App Name
 import { name as appName } from "./app.json"
-import ModuleProvider from "./src/ModuleProvider"
+import PaperProvider from "./src/PaperProvider"
 import { QueryClient, QueryClientProvider } from "react-query"
 const queryClient = new QueryClient()
 
@@ -13,7 +13,7 @@ export default function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <StatusBar />
-        <ModuleProvider />
+        <PaperProvider />
       </QueryClientProvider>
     </>
   )

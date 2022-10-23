@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { Provider } from "react-native-paper"
 import TopNavbar from "./Navbar/TopNavbar"
-import BottomNavbar from "./Navbar/BottomNavbar"
+
+import ListProvider from "./ListProvider"
 import storage from "../../Components/storage"
 
 function HomeScreen(props) {
@@ -19,12 +20,19 @@ function HomeScreen(props) {
   }, [])
 
   return (
-    <Provider theme={theme}>
+    <Provider>
       <TopNavbar
         navigation={navigation}
+        theme={theme}
         setToken={props.route.params.setToken}
       />
-      <BottomNavbar
+      {/* <BottomNavbar
+        navigation={navigation}
+        history={history}
+        setHistory={setHistory}
+      /> */}
+      <ListProvider
+        theme={theme}
         navigation={navigation}
         history={history}
         setHistory={setHistory}

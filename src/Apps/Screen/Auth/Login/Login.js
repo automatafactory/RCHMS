@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useMutation } from "react-query"
 import axios from "axios"
-import { View, StyleSheet, StatusBar, Image, ScrollView } from "react-native"
+import { View, StyleSheet, StatusBar, Image, Appearance } from "react-native"
 import {
   TextInput,
   Portal,
@@ -10,13 +10,24 @@ import {
   Button,
   Dialog,
   Text,
-  MD3DarkTheme as Theme,
+  MD3DarkTheme,
+  MD3LightTheme,
 } from "react-native-paper"
+import * as SecureStore from "expo-secure-store"
 
 export default function Login(props) {
+  const sysTheam = Appearance.getColorScheme()
+  const [theme, setTheme] = useState(
+    sysTheam === "dark" ? MD3DarkTheme : MD3LightTheme
+  )
+
+  Appearance.addChangeListener(({ colorScheme }) => {
+    setTheme(colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme)
+  })
   const navigation = props.navigation
   const setToken = props.route.params.setToken
-  const colors = props.route.params.colors
+  const colors = theme.colors
+
   const url = `http://${props.route.params.url}/oauth`
   /* --------------------------------------------------
 
@@ -31,7 +42,7 @@ export default function Login(props) {
   const [visible, setVisible] = useState(false)
 
   const networkAuthenticated = async ({ url, body }) => {
-    var config = {
+    const config = {
       method: "post",
       url: url,
       headers: {
@@ -39,7 +50,8 @@ export default function Login(props) {
       },
       data: JSON.stringify(body),
     }
-    await axios(config)
+    const payload = await axios(config)
+    return payload
   }
 
   // const networkAuthenticated = async ({ url, body }) =>
@@ -50,52 +62,53 @@ export default function Login(props) {
   //     redirect: "follow",
   //   })
 
-  // const { isLoading, isSuccess, isError, data, error, mutate } = useMutation(
-  //   networkAuthenticated,
-  //   {
-  //     onSuccess: async (data, variables, context) => {
-  //       if (data.status !== 200) {
-  //         setVisible(true)
-  //         setAlartTitel(`Login Error`)
-  //         setAlartMassaage(data.massage)
-  //       }
-  //     },
+  const { isLoading, isSuccess, isError, data, error, mutate } = useMutation(
+    networkAuthenticated,
+    {
+      onSuccess: async (payload) => {
+        console.log(payload.data.token)
 
-  const { mutate, isLoading } = useMutation(networkAuthenticated, {
-    onSuccess: async (data) => {
-      // setToken(data.token)
-      console.log("🚀 ~ file: Login.js ~ line 40 ~ Login ~ payload", await data)
-    },
-    onError: (error) => {
-      error = error.message
-      setVisible(true)
-      setAlartTitel(`Login Error`)
-      setAlartMassaage(error)
-      console.log("e>>", error)
-    },
-    retry: () => {
-      setVisible(true)
-      setAlartTitel(`Alart`)
-      setAlartMassaage("Retrying")
-    },
-  })
+        if (payload.status != 200) {
+          setVisible(true)
+          setAlartTitel(`Login Error`)
+          setAlartMassaage(payload.data)
+        } else {
+          await SecureStore.setItemAsync("token", payload.data.token)
+          setToken(payload.data.token)
+        }
+      },
+
+      onError: (error) => {
+        error = error.message
+        setVisible(true)
+        setAlartTitel(`Login Error`)
+        setAlartMassaage(error)
+        console.log("e>>", error)
+      },
+      retry: () => {
+        setVisible(true)
+        setAlartTitel(`Alart`)
+        setAlartMassaage("Retrying")
+      },
+    }
+  )
 
   return (
-    <Provider theme={Theme}>
-      <View style={styles.container}>
-        <View style={styles.row}>
-          <View style={styles.header}>
+    <Provider theme={theme}>
+      <View style={styles({ colors }).container}>
+        <View style={styles({ colors }).row}>
+          <View style={styles({ colors }).header}>
             <Image
               source={require("../../../../assets/icon.png")}
-              style={styles.img}
+              style={styles({ colors }).img}
             />
-            <Text style={styles.text} variant="displayLarge">
+            <Text style={styles({ colors }).text} variant="displayLarge">
               Login
             </Text>
           </View>
         </View>
-        <View style={styles.row}>
-          <View style={styles.body}>
+        <View style={styles({ colors }).row}>
+          <View style={styles({ colors }).body}>
             <TextInput
               label="Email"
               mode="outlined"
@@ -118,10 +131,10 @@ export default function Login(props) {
                 setPassword(password)
               }}
             />
-            <Text style={styles.server}>Current Server: {url}</Text>
+            <Text style={styles({ colors }).server}>Current Server: {url}</Text>
 
             <Button
-              style={styles.margins}
+              style={styles({ colors }).margins}
               mode="contained"
               loading={isLoading}
               onPress={() =>
@@ -138,9 +151,9 @@ export default function Login(props) {
             >
               Login
             </Button>
-            <View style={styles.row}>
+            <View style={styles({ colors }).row}>
               <Button
-                style={styles.margins}
+                style={styles({ colors }).margins}
                 mode="text"
                 textColor={colors.secondary}
                 onPress={() => {
@@ -154,7 +167,7 @@ export default function Login(props) {
                 Forgot Password
               </Button>
               <Button
-                style={styles.margins}
+                style={styles({ colors }).margins}
                 textColor={colors.error}
                 mode="text"
                 onPress={() => navigation.navigate("Setup")}
@@ -164,8 +177,8 @@ export default function Login(props) {
             </View>
           </View>
         </View>
-        <View style={styles.row}>
-          <View style={styles.footer}>
+        <View style={styles({ colors }).row}>
+          <View style={styles({ colors }).footer}>
             <Text>Power by React Native</Text>
             <Text>Tanbin Hassan © 2022 </Text>
             <StatusBar style="auto" />
@@ -220,70 +233,69 @@ const loginCheck = ({
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    // backgroundColor: Theme.colors.surfaceVariant,
-    backgroundColor: "#000",
-    width: "100%",
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "space-around",
-    alignItemsArr: "center",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItemsArr: "center",
-  },
-  server: {
-    textAlign: "center",
-    paddingTop: 5,
-  },
-  header: {
-    flex: 1,
-    width: "100%",
-    // padding: "20%",
-    margin: "5%",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItemsArr: "center",
-  },
-  btn: {
-    flex: 1,
-    width: "100%",
-    padding: "10%",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-  },
+const styles = ({ colors }) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: colors.background,
 
-  imgcontainer: {
-    marginTop: 30,
-    flex: 1,
-    width: "100%",
-    padding: 50,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  img: {
-    width: 50,
-    height: 50,
-    margin: 10,
-  },
-  margins: {
-    marginTop: "10%",
-  },
-  text: {
-    fontFamily: Theme.colors.fontFamily,
-    color: Theme.colors.primary,
-    textAlign: "center",
-  },
-  body: {
-    flex: 1,
-    padding: "10%",
-    width: "100%",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItemsArr: "center",
-  },
-})
+      flex: 1,
+      flexDirection: "column",
+      justifyContent: "space-around",
+      alignItemsArr: "center",
+    },
+    row: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItemsArr: "center",
+    },
+    server: {
+      textAlign: "center",
+      paddingTop: 5,
+    },
+    header: {
+      flex: 1,
+      width: "100%",
+      // padding: "20%",
+      margin: "5%",
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItemsArr: "center",
+    },
+    btn: {
+      flex: 1,
+      width: "100%",
+      padding: "10%",
+      flexDirection: "column",
+      justifyContent: "flex-start",
+    },
+
+    imgcontainer: {
+      marginTop: 30,
+      flex: 1,
+      width: "100%",
+      padding: 50,
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    img: {
+      width: 50,
+      height: 50,
+      margin: 10,
+    },
+    margins: {
+      marginTop: "10%",
+    },
+    text: {
+      textAlign: "center",
+      color: colors.primary,
+    },
+    body: {
+      flex: 1,
+      padding: "10%",
+      width: "100%",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItemsArr: "center",
+    },
+  })

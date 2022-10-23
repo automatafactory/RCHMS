@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react"
-import { View, StyleSheet, StatusBar, Image } from "react-native"
-import { TextInput, Button, Text, MD3LightTheme } from "react-native-paper"
+import { View, StyleSheet, StatusBar, Image, Appearance } from "react-native"
+import {
+  TextInput,
+  Button,
+  Text,
+  MD3LightTheme,
+  MD3DarkTheme,
+  Provider,
+} from "react-native-paper"
+
 import { get, save } from "../../../Components/vault"
 import updateURL from "./updateURL"
 
@@ -14,27 +22,35 @@ const theme = {
 export default function Setup(props) {
   const navigation = props.navigation
 
-  // Veriables
-  const defaultServer = "192.168.1.2:8000"
+  const sysTheam = Appearance.getColorScheme()
+  const [theme, setTheme] = useState(
+    sysTheam === "dark" ? MD3DarkTheme : MD3LightTheme
+  )
+  const [loading, setLoading] = useState(false)
+  Appearance.addChangeListener(({ colorScheme }) => {
+    setTheme(colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme)
+  })
+  const colors = theme.colors
+
   // State
   const [estatus, setEstatus] = useState(false)
   const [url, setURL] = useState(props.route.params.url)
 
   return (
-    <View style={StyleSheet.absoluteFillObject}>
-      <View style={styles.container}>
-        <View style={styles.imgcontainer}>
+    <Provider theme={theme}>
+      <View style={styles({ colors }).container}>
+        <View style={styles({ colors }).imgcontainer}>
           <Image
             source={require("../../../../assets/icon.png")}
-            style={styles.img}
+            style={styles({ colors }).img}
           />
-          <Text style={styles.text} variant="displayLarge">
+          <Text style={styles({ colors }).text} variant="displayLarge">
             Hampo
           </Text>
         </View>
-        <View style={styles.wrapper}>
+        <View style={styles({ colors }).wrapper}>
           {estatus ? (
-            <Text style={styles.errtext}>
+            <Text style={styles({ colors }).errtext}>
               Error Connecting to server please updateURL the address of the
               server of your connection.
             </Text>
@@ -46,72 +62,70 @@ export default function Setup(props) {
             placeholder="eg: 192.168.0.1:8000"
             value={url}
             mode="outlined"
-            onChangeText={() => setURL(url)}
+            onChangeText={(url) => setURL(url)}
           />
 
           <Button
-            style={styles.margins}
+            style={styles({ colors }).margins}
+            loading={loading}
             mode="contained"
-            onPress={() => updateURL(url, navigation, setEstatus)}
+            onPress={() =>
+              updateURL({ url, setURL, navigation, setEstatus, setLoading })
+            }
           >
             Connect
-          </Button>
-          <Button
-            style={styles.margins}
-            mode="text"
-            onPress={() => updateURL(defaultServer, navigation, setEstatus)}
-          >
-            Default
           </Button>
         </View>
         <Text> Tanbin Hassan © 2022 - All Rights Reserved.</Text>
       </View>
       <StatusBar style="auto" />
-    </View>
+    </Provider>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: theme.colors.surfaceVariant,
-    textAlign: "center",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "3%",
-    width: "100%",
-  },
-  wrapper: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    padding: "15%",
-    justifyContent: "space-evenly",
-  },
-  imgcontainer: {
-    marginTop: 30,
-    flex: 1,
-    width: "100%",
-    padding: 50,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  img: {
-    width: 100,
-    height: 100,
-  },
-  text: {
-    padding: "5%",
-  },
-  errtext: {
-    color: "red",
-    // backgroundColor: "black",
-    padding: 15,
-  },
-  margins: {
-    marginTop: "5%",
-    width: "100%",
-    marginBottom: "5%",
-  },
-})
+const styles = ({ colors }) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: colors.background,
+      textAlign: "center",
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "3%",
+      width: "100%",
+    },
+    wrapper: {
+      flex: 1,
+      height: "100%",
+      width: "100%",
+      padding: "15%",
+      justifyContent: "space-evenly",
+    },
+    imgcontainer: {
+      marginTop: 30,
+      flex: 1,
+      width: "100%",
+      padding: 50,
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    img: {
+      width: 100,
+      height: 100,
+    },
+    text: {
+      padding: "5%",
+      color: colors.primary,
+    },
+    errtext: {
+      color: "red",
+      // backgroundColor: "black",
+      padding: 15,
+    },
+    margins: {
+      marginTop: "5%",
+      width: "100%",
+      marginBottom: "5%",
+    },
+  })

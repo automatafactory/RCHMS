@@ -15,8 +15,17 @@ import QRCamaraScreen from "./Apps/Screen/Camara/QRCamaraScreen"
 import { get, save } from "./Apps/Components/vault"
 
 const Main = ({ theme }) => {
-  const [token, setToken] = useState()
-  const url = "192.168.0.5:7000"
+  const [token, setToken] = useState(async () => {
+    const data = await SecureStore.getItemAsync("token")
+    if (data) {
+      console.log("Token=>>", data)
+
+      return data
+    } else {
+      return false
+    }
+  })
+  const url = "192.168.1.2:8000"
 
   return (
     <NavigationContainer>
@@ -63,7 +72,7 @@ const Main = ({ theme }) => {
             initialParams={{
               url: url,
               setToken: setToken,
-              colors: theme.colors,
+              theme: theme,
             }}
           />
           <Stack.Screen
