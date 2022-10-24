@@ -123,18 +123,20 @@ const styles = ({ colors }) =>
     },
     wrapper: {
       flex: 1,
-      height: "100%",
+      // height: "100%",
       width: "100%",
       padding: "15%",
       justifyContent: "space-evenly",
     },
     imgcontainer: {
-      marginTop: 30,
+      marginTop: "5%",
       flex: 1,
       width: "100%",
-      padding: 50,
+      padding: "5%",
       flexDirection: "column",
+      flexWrap: "wrap",
       justifyContent: "center",
+      alignContent: "center",
       alignItems: "center",
     },
     img: {
@@ -147,7 +149,6 @@ const styles = ({ colors }) =>
     },
     errtext: {
       color: "red",
-      // backgroundColor: "black",
       padding: 15,
     },
     margins: {
