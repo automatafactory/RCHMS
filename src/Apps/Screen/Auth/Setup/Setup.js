@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react"
-import { View, StyleSheet, StatusBar, Image, Appearance } from "react-native"
+import {
+  View,
+  StyleSheet,
+  StatusBar,
+  Image,
+  Appearance,
+  Alert,
+} from "react-native"
 import {
   TextInput,
   Button,
@@ -8,25 +15,17 @@ import {
   MD3DarkTheme,
   Provider,
 } from "react-native-paper"
+import { useMutation } from "react-query"
+import axios from "axios"
+import * as SecureStore from "expo-secure-store"
 
-import { get, save } from "../../../Components/vault"
-import updateURL from "./updateURL"
-
-const theme = {
-  ...MD3LightTheme,
-  colors: {
-    ...MD3LightTheme.colors,
-  },
-}
-
-export default function Setup(props) {
+const Setup = (props) => {
   const navigation = props.navigation
-
   const sysTheam = Appearance.getColorScheme()
   const [theme, setTheme] = useState(
     sysTheam === "dark" ? MD3DarkTheme : MD3LightTheme
   )
-  const [loading, setLoading] = useState(false)
+
   Appearance.addChangeListener(({ colorScheme }) => {
     setTheme(colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme)
   })
@@ -35,6 +34,36 @@ export default function Setup(props) {
   // State
   const [estatus, setEstatus] = useState(false)
   const [url, setURL] = useState(props.route.params.url)
+
+  const networkAuthenticated = async ({ url }) => {
+    const config = {
+      method: "post",
+      url: `http://${url}/verify`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: JSON.stringify({ prodectid: "d6b05a143f1084108d071843c134a297" }),
+    }
+    const payload = await axios(config)
+    console.log(payload)
+    return payload
+  }
+
+  const { isLoading, mutate } = useMutation(networkAuthenticated, {
+    onSuccess: async () => {
+      if (payload.status != 200) {
+        setEstatus(true)
+      } else {
+        await SecureStore.setItemAsync("url", url)
+        const _url = SecureStore.getItemAsync("url")
+        setURL(_url)
+        navigation.navigate("Login")
+      }
+    },
+    onError: (error) => {
+      Alert.alert("Error", error)
+    },
+  })
 
   return (
     <Provider theme={theme}>
@@ -67,11 +96,9 @@ export default function Setup(props) {
 
           <Button
             style={styles({ colors }).margins}
-            loading={loading}
+            loading={isLoading}
             mode="contained"
-            onPress={() =>
-              updateURL({ url, setURL, navigation, setEstatus, setLoading })
-            }
+            onPress={() => mutate({ url })}
           >
             Connect
           </Button>
@@ -129,3 +156,5 @@ const styles = ({ colors }) =>
       marginBottom: "5%",
     },
   })
+
+export default Setup

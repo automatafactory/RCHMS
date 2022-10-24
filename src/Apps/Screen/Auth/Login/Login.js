@@ -20,15 +20,18 @@ export default function Login(props) {
   const [theme, setTheme] = useState(
     sysTheam === "dark" ? MD3DarkTheme : MD3LightTheme
   )
-
   Appearance.addChangeListener(({ colorScheme }) => {
     setTheme(colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme)
   })
+
+  const _url = props.route.params.url
+  const url = `http://${_url}/oauth`
   const navigation = props.navigation
+
   const setToken = props.route.params.setToken
   const colors = theme.colors
+  if (!_url) navigation.navigate("Setup")
 
-  const url = `http://${props.route.params.url}/oauth`
   /* --------------------------------------------------
 
                       State   

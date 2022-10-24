@@ -15,17 +15,23 @@ import QRCamaraScreen from "./Apps/Screen/Camara/QRCamaraScreen"
 import { get, save } from "./Apps/Components/vault"
 
 const Main = ({ theme }) => {
-  const [token, setToken] = useState(async () => {
-    const data = await SecureStore.getItemAsync("token")
-    if (data) {
-      console.log("Token=>>", data)
+  const [token, setToken] = useState(false)
+  // const setTokenFun = setToken()
+  const [url, setUrl] = useState(false)
 
-      return data
-    } else {
-      return false
+  useEffect(() => {
+    async function getToken() {
+      let data = await SecureStore.getItemAsync("token")
+      !data ? setToken(null) : setToken(data)
     }
-  })
-  const url = "192.168.1.2:8000"
+    async function getURL() {
+      let data = await SecureStore.getItemAsync("url")
+      !data ? (data = "192.168.1.2:8000") : data
+      setUrl(data)
+    }
+    getToken()
+    getURL()
+  }, [])
 
   return (
     <NavigationContainer>
@@ -41,7 +47,7 @@ const Main = ({ theme }) => {
               initialParams={{
                 url: url,
                 token: token,
-                setToken: setToken,
+                tokenfun: setToken(),
                 theme: theme,
               }}
             />
