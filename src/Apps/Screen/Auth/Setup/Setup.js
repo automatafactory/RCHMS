@@ -14,6 +14,9 @@ import {
   MD3LightTheme,
   MD3DarkTheme,
   Provider,
+  Paragraph,
+  Dialog,
+  Portal,
 } from "react-native-paper"
 import { useMutation } from "react-query"
 import axios from "axios"
@@ -32,7 +35,19 @@ const Setup = (props) => {
   const colors = theme.colors
 
   // State
-  const [estatus, setEstatus] = useState(false)
+
+  const [alartMsg, setAlartMsg] = useState({
+    visible: false,
+    body: "",
+    titel: "",
+  })
+
+  const hideDialog = () =>
+    setAlartMsg({
+      visible: false,
+      body: "",
+      titel: "",
+    })
   const [url, setURL] = useState(props.route.params.url)
 
   const networkAuthenticated = async ({ url }) => {
@@ -45,23 +60,29 @@ const Setup = (props) => {
       data: JSON.stringify({ prodectid: "d6b05a143f1084108d071843c134a297" }),
     }
     const payload = await axios(config)
-    console.log(payload)
     return payload
   }
 
-  const { isLoading, mutate } = useMutation(networkAuthenticated, {
-    onSuccess: async () => {
-      if (payload.status != 200) {
-        setEstatus(true)
-      } else {
+  const { isLoading, mutate, isError } = useMutation(networkAuthenticated, {
+    onSuccess: async ({ data, status }) => {
+      console.log(">", data)
+      console.log(">", status)
+      if (status === 200 && data.Status === "Success") {
         await SecureStore.setItemAsync("url", url)
-        const _url = SecureStore.getItemAsync("url")
+        const _url = await SecureStore.getItemAsync("url")
+
+        console.log("Update url:", _url)
+
         setURL(_url)
         navigation.navigate("Login")
       }
     },
-    onError: (error) => {
-      Alert.alert("Error", error)
+
+    onError: ({ message, code }) => {
+      setAlartMsg({
+        visible: true,
+        body: message + "/n Error Code:" + code,
+      })
     },
   })
 
@@ -78,15 +99,12 @@ const Setup = (props) => {
           </Text>
         </View>
         <View style={styles({ colors }).wrapper}>
-          {estatus ? (
-            <Text style={styles({ colors }).errtext}>
-              Error Connecting to server please updateURL the address of the
-              server of your connection.
-            </Text>
-          ) : null}
+          {/* {isError ? (
+            <Text style={styles({ colors }).errtext}>{alartMsg.body}</Text>
+          ) : null} */}
 
           <TextInput
-            error={estatus}
+            error={isError}
             label="Server Address"
             placeholder="eg: 192.168.0.1:8000"
             value={url}
@@ -103,8 +121,20 @@ const Setup = (props) => {
             Connect
           </Button>
         </View>
-        <Text> Tanbin Hassan © 2022 - All Rights Reserved.</Text>
+
+        <Text>Tanbin Hassan © 2022 - All Rights Reserved.</Text>
       </View>
+      <Portal>
+        <Dialog visible={alartMsg.visible} onDismiss={hideDialog}>
+          <Dialog.Title>Server Error</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>{alartMsg.body}</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>Dismiss</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       <StatusBar style="auto" />
     </Provider>
   )

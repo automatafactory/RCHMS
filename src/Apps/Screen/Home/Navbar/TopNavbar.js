@@ -1,14 +1,10 @@
 import { useState } from "react"
 import { Appbar, Text, Menu, Divider, Button } from "react-native-paper"
-import { Alert, StyleSheet, View } from "react-native"
+import { Alert, StyleSheet, View, BackHandler } from "react-native"
 import * as SecureStore from "expo-secure-store"
-const logout = async () => {
-  try {
-    await SecureStore.deleteItemAsync("token")
-    setToken(false)
-  } catch (e) {
-    Alert.alert("Logout Error", e)
-  }
+const logout = async ({ navigation }) => {
+  await SecureStore.deleteItemAsync("token")
+  navigation.navigator.back()
 }
 
 const exit = () => {
@@ -21,7 +17,7 @@ const exit = () => {
         onPress: () => console.log("Cancel Pressed"),
         style: "cancel",
       },
-      { text: "Yes", onPress: () => console.log("Exit Pressed") },
+      { text: "Yes", onPress: () => BackHandler.exitApp() },
     ],
     { cancelable: false }
   )
@@ -80,7 +76,7 @@ export default function TopNavbar({ navigation, setToken, theme }) {
           />
           <Menu.Item
             leadingIcon="power"
-            onPress={() => logout()}
+            onPress={() => logout({ navigation })}
             title="Log out"
           />
         </Menu>

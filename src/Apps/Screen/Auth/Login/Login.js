@@ -1,53 +1,72 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { useMutation } from "react-query"
 import axios from "axios"
-import { View, StyleSheet, StatusBar, Image, Appearance } from "react-native"
+import { View, StyleSheet, StatusBar, Image } from "react-native"
 import {
   TextInput,
   Portal,
   Paragraph,
-  Provider,
   Button,
   Dialog,
   Text,
-  MD3DarkTheme,
-  MD3LightTheme,
+  ActivityIndicator,
 } from "react-native-paper"
 import * as SecureStore from "expo-secure-store"
 
 export default function Login(props) {
-  const sysTheam = Appearance.getColorScheme()
-  const [theme, setTheme] = useState(
-    sysTheam === "dark" ? MD3DarkTheme : MD3LightTheme
-  )
-  Appearance.addChangeListener(({ colorScheme }) => {
-    setTheme(colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme)
-  })
+  /* --------------------------------------------------
 
-  const _url = props.route.params.url
-  const url = `http://${_url}/oauth`
+                      Props   
+
+  ----------------------------------------------------- */
   const navigation = props.navigation
-
-  const setToken = props.route.params.setToken
+  const theme = props.route.params.theme
   const colors = theme.colors
-  if (!_url) navigation.navigate("Setup")
-
   /* --------------------------------------------------
 
                       State   
 
   ----------------------------------------------------- */
+  const [url, setUrl] = useState()
   const [alartTitel, setAlartTitel] = useState("Alart")
   const [alartMassaage, setAlartMassaage] = useState()
   const [username, setUsername] = useState()
   const [password, setPassword] = useState()
   const [secureText, setSecureText] = useState(true)
   const [visible, setVisible] = useState(false)
+  const [loading, setLoading] = useState(true)
+  /* --------------------------------------------------
 
+                      useEffect   
+
+  ----------------------------------------------------- */
+  useEffect(() => {
+    SecureStore.getItemAsync("url").then((payload) => {
+      console.log("Home/Login>", payload)
+      setUrl(payload)
+      setLoading(false)
+    })
+  }, [])
+
+  // if (!_url) navigation.navigate("Setup")
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const _url = await SecureStore.getItemAsync("url")
+  //     console.log("e>", _url)
+  //     setUrl(`http://${_url}:8000/login`)
+  //   }
+  //   fetchData()
+  // }, [])
+  /* --------------------------------------------------
+
+                      network   
+
+  ----------------------------------------------------- */
   const networkAuthenticated = async ({ url, body }) => {
     const config = {
       method: "post",
-      url: url,
+      url: `http://${url}:8000/login`,
       headers: {
         "Content-Type": "application/json",
       },
@@ -57,155 +76,142 @@ export default function Login(props) {
     return payload
   }
 
-  // const networkAuthenticated = async ({ url, body }) =>
-  //   await fetch(url, {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(body),
-  //     redirect: "follow",
-  //   })
+  const { isLoading, isError, mutate } = useMutation(networkAuthenticated, {
+    onSuccess: async ({ data }) => {
+      await SecureStore.setItemAsync("token", data.token)
+      const _token = await SecureStore.getItemAsync("token")
+      navigation.navigate("Home")
+    },
 
-  const { isLoading, isSuccess, isError, data, error, mutate } = useMutation(
-    networkAuthenticated,
-    {
-      onSuccess: async (payload) => {
-        console.log(payload.data.token)
-
-        if (payload.status != 200) {
-          setVisible(true)
-          setAlartTitel(`Login Error`)
-          setAlartMassaage(payload.data)
-        } else {
-          await SecureStore.setItemAsync("token", payload.data.token)
-          setToken(payload.data.token)
-        }
-      },
-
-      onError: (error) => {
-        error = error.message
-        setVisible(true)
-        setAlartTitel(`Login Error`)
-        setAlartMassaage(error)
-        console.log("e>>", error)
-      },
-      retry: () => {
-        setVisible(true)
-        setAlartTitel(`Alart`)
-        setAlartMassaage("Retrying")
-      },
-    }
-  )
-
-  return (
-    <Provider theme={theme}>
-      <View style={styles({ colors }).container}>
-        <View style={styles({ colors }).row}>
-          <View style={styles({ colors }).header}>
-            <Image
-              source={require("../../../../assets/icon.png")}
-              style={styles({ colors }).img}
-            />
-            <Text style={styles({ colors }).text} variant="displayLarge">
-              Login
-            </Text>
-          </View>
-        </View>
-        <View style={styles({ colors }).row}>
-          <View style={styles({ colors }).body}>
-            <TextInput
-              label="Email"
-              mode="outlined"
-              value={username}
-              onChangeText={(username) => setUsername(username)}
-            />
-            <TextInput
-              mode="outlined"
-              label="Password"
-              placeholder={"********"}
-              value={password}
-              secureTextEntry={secureText}
-              right={
-                <TextInput.Icon
-                  icon="eye"
-                  onPress={() => setSecureText(!secureText)}
-                />
-              }
-              onChangeText={(password) => {
-                setPassword(password)
-              }}
-            />
-            <Text style={styles({ colors }).server}>Current Server: {url}</Text>
-
-            <Button
-              style={styles({ colors }).margins}
-              mode="contained"
-              loading={isLoading}
-              onPress={() =>
-                loginCheck({
-                  url,
-                  username,
-                  password,
-                  setVisible,
-                  setAlartTitel,
-                  setAlartMassaage,
-                  mutate,
-                })
-              }
-            >
-              Login
-            </Button>
-            <View style={styles({ colors }).row}>
-              <Button
-                style={styles({ colors }).margins}
-                mode="text"
-                textColor={colors.secondary}
-                onPress={() => {
-                  setVisible(true)
-                  setAlartTitel(`Notice`)
-                  setAlartMassaage(
-                    "Please contact Admin or related branch for Password Reset"
-                  )
-                }}
-              >
-                Forgot Password
-              </Button>
-              <Button
-                style={styles({ colors }).margins}
-                textColor={colors.error}
-                mode="text"
-                onPress={() => navigation.navigate("Setup")}
-              >
-                Change Server
-              </Button>
+    onError: (error) => {
+      error = error.message
+      setVisible(true)
+      setAlartTitel(`Login Error`)
+      setAlartMassaage(error.message)
+      console.log("e>>", error)
+    },
+    // retry: () => {
+    //   setVisible(true)
+    //   setAlartTitel(`Alart`)
+    //   setAlartMassaage("Retrying")
+    // },
+  })
+  if (!loading) {
+    return (
+      <>
+        <View style={styles({ colors }).container}>
+          <View style={styles({ colors }).row}>
+            <View style={styles({ colors }).header}>
+              <Image
+                source={require("../../../../assets/icon.png")}
+                style={styles({ colors }).img}
+              />
+              <Text style={styles({ colors }).text} variant="displayLarge">
+                Login
+              </Text>
             </View>
           </View>
-        </View>
-        <View style={styles({ colors }).row}>
-          <View style={styles({ colors }).footer}>
-            <Text>Power by React Native</Text>
-            <Text>Tanbin Hassan © 2022 </Text>
-            <StatusBar style="auto" />
+          <View style={styles({ colors }).row}>
+            <View style={styles({ colors }).body}>
+              <TextInput
+                label="Email"
+                mode="outlined"
+                value={username}
+                onChangeText={(username) => setUsername(username)}
+              />
+              <TextInput
+                mode="outlined"
+                label="Password"
+                placeholder={"********"}
+                value={password}
+                secureTextEntry={secureText}
+                right={
+                  <TextInput.Icon
+                    icon="eye"
+                    onPress={() => setSecureText(!secureText)}
+                  />
+                }
+                onChangeText={(password) => {
+                  setPassword(password)
+                }}
+              />
+              <Text style={styles({ colors }).server}>
+                Current Server: {url}
+              </Text>
+
+              <Button
+                style={styles({ colors }).margins}
+                mode="contained"
+                loading={isLoading}
+                onPress={() =>
+                  loginCheck({
+                    url,
+                    username,
+                    password,
+                    setVisible,
+                    setAlartTitel,
+                    setAlartMassaage,
+                    mutate,
+                  })
+                }
+              >
+                Login
+              </Button>
+              <View style={styles({ colors }).row}>
+                <Button
+                  style={styles({ colors }).margins}
+                  mode="text"
+                  textColor={colors.secondary}
+                  onPress={() => {
+                    setVisible(true)
+                    setAlartTitel(`Notice`)
+                    setAlartMassaage(
+                      "Please contact Admin or related branch for Password Reset"
+                    )
+                  }}
+                >
+                  Forgot Password
+                </Button>
+                <Button
+                  style={styles({ colors }).margins}
+                  textColor={colors.error}
+                  mode="text"
+                  onPress={() => navigation.navigate("Setup")}
+                >
+                  Change Server
+                </Button>
+              </View>
+            </View>
           </View>
+          <View style={styles({ colors }).row}>
+            <View style={styles({ colors }).footer}>
+              <Text>Power by Tanbin Hassan © 2022 </Text>
+              <StatusBar style="auto" />
+            </View>
+          </View>
+          <Portal>
+            <Dialog
+              style={{ maxHeight: "75%" }}
+              visible={visible}
+              onDismiss={() => setVisible(false)}
+            >
+              <Dialog.Icon icon="alert" />
+              <Dialog.Title>{alartTitel}</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>{alartMassaage}</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={() => setVisible(false)}>Done</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </View>
-        <Portal>
-          <Dialog
-            style={{ maxHeight: "75%" }}
-            visible={visible}
-            onDismiss={() => setVisible(false)}
-          >
-            <Dialog.Icon icon="alert" />
-            <Dialog.Title>{alartTitel}</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>{alartMassaage}</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={() => setVisible(false)}>Done</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </View>
-    </Provider>
-  )
+      </>
+    )
+  } else
+    <>
+      <ActivityIndicator animating={true} size="large" />
+    </>
 }
 
 const loginCheck = ({

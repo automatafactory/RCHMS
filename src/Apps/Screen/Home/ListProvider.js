@@ -1,5 +1,11 @@
 import { useState } from "react"
-import { FlatList, Animated, StyleSheet, SafeAreaView } from "react-native"
+import {
+  FlatList,
+  Animated,
+  StyleSheet,
+  SafeAreaView,
+  View,
+} from "react-native"
 import {
   Avatar,
   Button,
@@ -12,7 +18,6 @@ import {
 } from "react-native-paper"
 import moment from "moment"
 import React from "react"
-import { Background } from "@react-navigation/elements"
 
 export default function ListProvider({
   animateFrom,
@@ -23,7 +28,6 @@ export default function ListProvider({
   theme,
 }) {
   const [isExtended, setIsExtended] = useState(true)
-  // const background = theme.colors.background
 
   const onScroll = ({ nativeEvent }) => {
     const currentScrollPosition = Math.floor(nativeEvent?.contentOffset?.y) ?? 0
@@ -32,17 +36,13 @@ export default function ListProvider({
   const fabStyle = { [animateFrom]: 16 }
 
   return (
-    <Provider>
-      <SafeAreaView
-        style={{
-          backgroundColor: theme.colors.backdrop,
-        }}
-      >
+    <>
+      <SafeAreaView>
         <FlatList
           onScroll={onScroll}
           inverted="true"
           data={history}
-          renderItem={({ item }) => CardComponent(item, theme)}
+          renderItem={({ item }) => CardComponent({ item, theme })}
         />
       </SafeAreaView>
       <AnimatedFAB
@@ -53,13 +53,13 @@ export default function ListProvider({
         visible={true}
         animateFrom={"right"}
         variant={"tertiary"}
-        style={[styles.fabStyle, styles, fabStyle]}
+        style={[styles({ theme }).fabStyle, styles({ theme }), fabStyle]}
       />
-    </Provider>
+    </>
   )
 }
 
-const CardComponent = (item, theme) => {
+const CardComponent = ({ item, theme }) => {
   const LeftContent = (props) => <Avatar.Icon {...props} icon="qrcode-scan" />
   return (
     <Card mode="elevated" style={{ marginTop: 10 }}>
@@ -67,7 +67,6 @@ const CardComponent = (item, theme) => {
       <Card.Content>
         <Title>Scan ID: {item.id}</Title>
         <Paragraph>{item.data}</Paragraph>
-
         <Text>Scan Date: {moment(item.date).startOf("hour").fromNow()}</Text>
       </Card.Content>
       <Card.Actions>
@@ -77,19 +76,24 @@ const CardComponent = (item, theme) => {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    paddingTop: 22,
-    flexGrow: 1,
-  },
-  item: {
-    // marginTop: 10,
-  },
-  fabStyle: {
-    bottom: 16,
-    right: 16,
-    position: "absolute",
-    marginBottom: "5%",
-  },
-})
+const styles = ({ theme }) =>
+  StyleSheet.create({
+    container: {
+      // flex: 1,
+      paddingTop: 22,
+      flexGrow: 1,
+    },
+    back: {
+      backgroundColor: theme.colors.surface,
+    },
+
+    item: {
+      // marginTop: 10,
+    },
+    fabStyle: {
+      bottom: 16,
+      right: 16,
+      position: "absolute",
+      marginBottom: "5%",
+    },
+  })
