@@ -4,7 +4,7 @@ import { Alert, StyleSheet, View, BackHandler } from "react-native"
 import * as SecureStore from "expo-secure-store"
 const logout = async ({ navigation }) => {
   await SecureStore.deleteItemAsync("token")
-  navigation.navigator.back()
+  // navigation.navigator.back()
 }
 
 const exit = () => {
@@ -40,8 +40,8 @@ export default function TopNavbar({ navigation, setToken, theme }) {
       <Appbar.Header
         elevated="true"
         dark={true}
-        mode="large"
-        // style={{ backgroundColor: theme.colors.primary }}
+        mode="medium"
+        style={{ backgroundColor: theme.colors.primaryContainer }}
       >
         <Appbar.BackAction onPress={() => exit()} />
         <Appbar.Content

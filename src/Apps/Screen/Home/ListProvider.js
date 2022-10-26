@@ -1,10 +1,12 @@
 import { useState } from "react"
+
 import {
   FlatList,
   Animated,
   StyleSheet,
   SafeAreaView,
   View,
+  Appearance,
 } from "react-native"
 import {
   Avatar,
@@ -29,6 +31,11 @@ export default function ListProvider({
 }) {
   const [isExtended, setIsExtended] = useState(true)
 
+  const [background, setBackground] = useState()
+  Appearance.addChangeListener(({ colorScheme }) => {
+    setBackground(colorScheme === "dark" ? "#000" : "#fff")
+  })
+
   const onScroll = ({ nativeEvent }) => {
     const currentScrollPosition = Math.floor(nativeEvent?.contentOffset?.y) ?? 0
     setIsExtended(currentScrollPosition <= 0)
@@ -39,8 +46,8 @@ export default function ListProvider({
     <>
       <SafeAreaView>
         <FlatList
+          style={{ backgroundColor: background }}
           onScroll={onScroll}
-          inverted="true"
           data={history}
           renderItem={({ item }) => CardComponent({ item, theme })}
         />
@@ -49,7 +56,9 @@ export default function ListProvider({
         icon={"qrcode-scan"}
         label={"Scan"}
         extended={isExtended}
-        onPress={() => navigation.navigate("CamaraScreen")}
+        onPress={() =>
+          navigation.navigate("CamaraScreen", { setHistory, setHistory })
+        }
         visible={true}
         animateFrom={"right"}
         variant={"tertiary"}
@@ -62,7 +71,13 @@ export default function ListProvider({
 const CardComponent = ({ item, theme }) => {
   const LeftContent = (props) => <Avatar.Icon {...props} icon="qrcode-scan" />
   return (
-    <Card mode="elevated" style={{ marginTop: 10 }}>
+    <Card
+      mode="elevated"
+      style={{
+        marginTop: 10,
+        backgroundColor: theme.colors.surface,
+      }}
+    >
       <Card.Title title={item.serial} left={LeftContent} />
       <Card.Content>
         <Title>Scan ID: {item.id}</Title>

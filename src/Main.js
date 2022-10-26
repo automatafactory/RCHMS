@@ -32,7 +32,7 @@ const Main = ({ theme }) => {
           options={{
             title: "Back to Home",
             headerStyle: {
-              backgroundColor: theme.colors.surfaceVariant,
+              backgroundColor: theme.colors.primaryContainer,
             },
             headerTintColor: theme.colors.onSurfaceVariant,
             headerTitleStyle: {

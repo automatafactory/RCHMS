@@ -2,30 +2,32 @@ import moment from "moment"
 import storage from "./storage"
 import { Alart } from "react-native"
 
-export default function codeProcesser(qrdata, setHistory) {
-  const _date = new Date()
-  let _id = generateUUID(16)
-  let _serialtag = idExtracter(qrdata)
+export default codeProcesser = (data, setHistory) => {
+  return new Promise((resolve, reject) => {
+    const _date = new Date()
+    let _id = generateUUID(16)
+    let _serialtag = idExtracter(data)
 
-  const _data = {
-    id: _id,
-    serial: _serialtag ? _serialtag : "invalid",
-    data: qrdata,
-    date: _date,
-    status: "pending",
-  }
+    const _data = {
+      id: _id,
+      serial: _serialtag ? _serialtag : "invalid",
+      data: data,
+      date: _date,
+      updateid: "pending",
+    }
 
-  storage.save({
-    key: "tableData",
-    id: _id,
-    data: _data,
-    expires: null,
-  })
-  // storage.clearMap()
-  storage.getAllDataForKey("tableData").then((data) => {
-    console.log(data)
-    console.log(setHistory)
-    setHistory(data)
+    storage
+      .save({
+        key: "tableData",
+        id: _id,
+        data: _data,
+        expires: null,
+      })
+      .then(() => storage.getAllDataForKey("tableData"))
+      .then((temp) => {
+        setHistory(temp)
+      })
+      .finally(() => resolve(true))
   })
 }
 

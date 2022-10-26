@@ -18,7 +18,7 @@ function HomeScreen(props) {
     storage
       .getAllDataForKey("tableData")
       .then((payload) => {
-        setHistory(!payload ? payload : payload.reverse())
+        setHistory(!payload ? payload : payload)
       })
       .then(() => {
         SecureStore.getItemAsync("token").then((payload) => {
@@ -42,11 +42,6 @@ function HomeScreen(props) {
           theme={theme}
           setToken={props.route.params.setToken}
         />
-        {/* <BottomNavbar
-        navigation={navigation}
-        history={history}
-        setHistory={setHistory}
-      /> */}
         <ListProvider
           theme={theme}
           navigation={navigation}
