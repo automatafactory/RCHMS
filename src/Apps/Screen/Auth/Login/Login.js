@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useMutation } from "react-query"
 import axios from "axios"
-import { View, StyleSheet, StatusBar, Image } from "react-native"
+import { View, StyleSheet, StatusBar, Image, Appearance } from "react-native"
 import {
   TextInput,
   Portal,
@@ -10,6 +10,7 @@ import {
   Dialog,
   Text,
   ActivityIndicator,
+  Provider,
 } from "react-native-paper"
 import * as SecureStore from "expo-secure-store"
 
@@ -20,8 +21,9 @@ export default function Login(props) {
 
   ----------------------------------------------------- */
   const navigation = props.navigation
+  const themecheme = props.route.params.themecheme
   const theme = props.route.params.theme
-  const colors = theme.colors
+
   /* --------------------------------------------------
 
                       State   
@@ -35,11 +37,22 @@ export default function Login(props) {
   const [secureText, setSecureText] = useState(true)
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [logosrc, setLogosrc] = useState(
+    require("../../../../assets/logo_d.png")
+  )
+
   /* --------------------------------------------------
 
                       useEffect   
 
   ----------------------------------------------------- */
+  useEffect(() => {
+    setLogosrc(
+      themecheme === "dark"
+        ? require("../../../../assets/logo_d.png")
+        : require("../../../../assets/logo_l.png")
+    )
+  }, [])
   useEffect(() => {
     SecureStore.getItemAsync("url").then((payload) => {
       console.log("Home/Login>", payload)
@@ -48,16 +61,6 @@ export default function Login(props) {
     })
   }, [])
 
-  // if (!_url) navigation.navigate("Setup")
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const _url = await SecureStore.getItemAsync("url")
-  //     console.log("e>", _url)
-  //     setUrl(`http://${_url}:8000/login`)
-  //   }
-  //   fetchData()
-  // }, [])
   /* --------------------------------------------------
 
                       network   
@@ -66,7 +69,7 @@ export default function Login(props) {
   const networkAuthenticated = async ({ url, body }) => {
     const config = {
       method: "post",
-      url: `http://${url}:8000/login`,
+      url: `http://${url}/login`,
       headers: {
         "Content-Type": "application/json",
       },
@@ -98,115 +101,111 @@ export default function Login(props) {
   })
   if (!loading) {
     return (
-      <>
-        <View style={styles({ colors }).container}>
-          <View style={styles({ colors }).row}>
-            <View style={styles({ colors }).header}>
-              <Image
-                source={require("../../../../assets/icon.png")}
-                style={styles({ colors }).img}
-              />
-              <Text style={styles({ colors }).text} variant="displayLarge">
-                Login
-              </Text>
-            </View>
+      <View style={styles({ theme }).container}>
+        <View style={styles({ theme }).row}>
+          <View style={styles({ theme }).header}>
+            <Image
+              source={require("../../../../assets/icon.png")}
+              style={styles({ theme }).img}
+            />
+            <Text style={styles({ theme }).text} variant="displayLarge">
+              Login
+            </Text>
           </View>
-          <View style={styles({ colors }).row}>
-            <View style={styles({ colors }).body}>
-              <TextInput
-                label="Email"
-                mode="outlined"
-                value={username}
-                onChangeText={(username) => setUsername(username)}
-              />
-              <TextInput
-                mode="outlined"
-                label="Password"
-                placeholder={"********"}
-                value={password}
-                secureTextEntry={secureText}
-                right={
-                  <TextInput.Icon
-                    icon="eye"
-                    onPress={() => setSecureText(!secureText)}
-                  />
-                }
-                onChangeText={(password) => {
-                  setPassword(password)
-                }}
-              />
-              <Text style={styles({ colors }).server}>
-                Current Server: {url}
-              </Text>
-
-              <Button
-                style={styles({ colors }).margins}
-                mode="contained"
-                loading={isLoading}
-                onPress={() =>
-                  loginCheck({
-                    url,
-                    username,
-                    password,
-                    setVisible,
-                    setAlartTitel,
-                    setAlartMassaage,
-                    mutate,
-                  })
-                }
-              >
-                Login
-              </Button>
-              <View style={styles({ colors }).row}>
-                <Button
-                  style={styles({ colors }).margins}
-                  mode="text"
-                  textColor={colors.secondary}
-                  onPress={() => {
-                    setVisible(true)
-                    setAlartTitel(`Notice`)
-                    setAlartMassaage(
-                      "Please contact Admin or related branch for Password Reset"
-                    )
-                  }}
-                >
-                  Forgot Password
-                </Button>
-                <Button
-                  style={styles({ colors }).margins}
-                  textColor={colors.error}
-                  mode="text"
-                  onPress={() => navigation.navigate("Setup")}
-                >
-                  Change Server
-                </Button>
-              </View>
-            </View>
-          </View>
-          <View style={styles({ colors }).row}>
-            <View style={styles({ colors }).footer}>
-              <Text>Power by Tanbin Hassan © 2022 </Text>
-              <StatusBar style="auto" />
-            </View>
-          </View>
-          <Portal>
-            <Dialog
-              style={{ maxHeight: "75%" }}
-              visible={visible}
-              onDismiss={() => setVisible(false)}
-            >
-              <Dialog.Icon icon="alert" />
-              <Dialog.Title>{alartTitel}</Dialog.Title>
-              <Dialog.Content>
-                <Paragraph>{alartMassaage}</Paragraph>
-              </Dialog.Content>
-              <Dialog.Actions>
-                <Button onPress={() => setVisible(false)}>Done</Button>
-              </Dialog.Actions>
-            </Dialog>
-          </Portal>
         </View>
-      </>
+        <View style={styles({ theme }).row}>
+          <View style={styles({ theme }).body}>
+            <TextInput
+              label="Email"
+              mode="outlined"
+              value={username}
+              onChangeText={(username) => setUsername(username)}
+            />
+            <TextInput
+              mode="outlined"
+              label="Password"
+              placeholder={"********"}
+              value={password}
+              secureTextEntry={secureText}
+              right={
+                <TextInput.Icon
+                  icon="eye"
+                  onPress={() => setSecureText(!secureText)}
+                />
+              }
+              onChangeText={(password) => {
+                setPassword(password)
+              }}
+            />
+            <Text style={styles({ theme }).server}>Current Server: {url}</Text>
+
+            <Button
+              style={styles({ theme }).margins}
+              mode="contained"
+              loading={isLoading}
+              onPress={() =>
+                loginCheck({
+                  url,
+                  username,
+                  password,
+                  setVisible,
+                  setAlartTitel,
+                  setAlartMassaage,
+                  mutate,
+                })
+              }
+            >
+              Login
+            </Button>
+            <View style={styles({ theme }).row}>
+              <Button
+                style={styles({ theme }).margins}
+                mode="text"
+                textColor={theme.secondary}
+                onPress={() => {
+                  setVisible(true)
+                  setAlartTitel(`Notice`)
+                  setAlartMassaage(
+                    "Please contact Admin or related branch for Password Reset"
+                  )
+                }}
+              >
+                Forgot Password
+              </Button>
+              <Button
+                style={styles({ theme }).margins}
+                textColor={theme.error}
+                mode="text"
+                onPress={() => navigation.navigate("Setup")}
+              >
+                Change Server
+              </Button>
+            </View>
+          </View>
+        </View>
+        <View style={styles({ theme }).row}>
+          <View style={styles({ theme }).footer}>
+            <Image style={styles({ theme }).logoStyle} source={logosrc} />
+            <StatusBar style="auto" />
+          </View>
+        </View>
+        <Portal>
+          <Dialog
+            style={{ maxHeight: "75%" }}
+            visible={visible}
+            onDismiss={() => setVisible(false)}
+          >
+            <Dialog.Icon icon="alert" />
+            <Dialog.Title>{alartTitel}</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph>{alartMassaage}</Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setVisible(false)}>Done</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </View>
     )
   } else
     <>
@@ -242,11 +241,10 @@ const loginCheck = ({
   }
 }
 
-const styles = ({ colors }) =>
+const styles = ({ theme }) =>
   StyleSheet.create({
     container: {
-      backgroundColor: colors.background,
-
+      backgroundColor: theme.colors.background,
       flex: 1,
       flexDirection: "column",
       justifyContent: "space-around",
@@ -297,7 +295,7 @@ const styles = ({ colors }) =>
     },
     text: {
       textAlign: "center",
-      color: colors.primary,
+      color: theme.primary,
     },
     body: {
       flex: 1,
@@ -306,5 +304,13 @@ const styles = ({ colors }) =>
       flexDirection: "column",
       justifyContent: "center",
       alignItemsArr: "center",
+    },
+    logoStyle: {
+      padding: "10%",
+      justifyContent: "center",
+      alignItemsArr: "center",
+      width: 100,
+      height: 80,
+      resizeMode: "contain",
     },
   })

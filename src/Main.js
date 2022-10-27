@@ -12,7 +12,7 @@ import Setup from "./Apps/Screen/Auth/Setup/Setup"
 import Login from "./Apps/Screen/Auth/Login/Login"
 import QRCamaraScreen from "./Apps/Screen/Camara/QRCamaraScreen"
 
-const Main = ({ theme }) => {
+const Main = ({ theme, colorScheme }) => {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="home">
@@ -49,6 +49,7 @@ const Main = ({ theme }) => {
           }}
           initialParams={{
             theme: theme,
+            colorScheme: colorScheme,
           }}
         />
         <Stack.Screen

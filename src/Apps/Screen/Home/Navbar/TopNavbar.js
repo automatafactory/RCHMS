@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Appbar, Text, Menu, Divider, Button } from "react-native-paper"
-import { Alert, StyleSheet, View, BackHandler } from "react-native"
+import { Alert, StyleSheet, View, BackHandler, Image } from "react-native"
 import * as SecureStore from "expo-secure-store"
 const logout = async ({ navigation }) => {
   await SecureStore.deleteItemAsync("token")
@@ -50,7 +50,7 @@ export default function TopNavbar({ navigation, setToken, theme }) {
               variant="headlineLarge"
               style={{ color: theme.colors.primary }}
             >
-              Hampo
+              Hampo <Image source={"../../../../assets/logo/af_logo.png"} />
             </Text>
           }
         />
