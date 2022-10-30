@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {
   View,
   StyleSheet,
@@ -22,8 +22,19 @@ import { useMutation } from "react-query"
 import axios from "axios"
 import * as SecureStore from "expo-secure-store"
 
+/**********************************************************
+ * 
+ // ! Setup function
+ *
+ ***********************************************************/
+
 const Setup = (props) => {
   const navigation = props.navigation
+
+  //** Testing **/
+  const [logosrc, setLogosrc] = useState(
+    require("../../../../assets/logo_d.png")
+  )
   const sysTheam = Appearance.getColorScheme()
   const [theme, setTheme] = useState(
     sysTheam === "dark" ? MD3DarkTheme : MD3LightTheme
@@ -32,52 +43,77 @@ const Setup = (props) => {
   Appearance.addChangeListener(({ colorScheme }) => {
     setTheme(colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme)
   })
+
+  //** Testing **/
+
   const colors = theme.colors
 
-  // State
-
+  /*
+   * State Menu
+   *
+   *
+   *
+   */
   const [alartMsg, setAlartMsg] = useState({
     visible: false,
     body: "",
     titel: "",
   })
-
   const hideDialog = () =>
     setAlartMsg({
       visible: false,
       body: "",
       titel: "",
     })
-  const [url, setURL] = useState(props.route.params.url)
+  const [url, setURL] = useState()
+
+  /*
+   * Context Menu
+   *
+   *
+   *
+   */
+
+  /*  
+  ! network Authenticated Menu
+  
+  System will check the url before save it
+  server endpoint /verify
+   
+  */
 
   const networkAuthenticated = async ({ url }) => {
     const config = {
-      method: "post",
+      method: "POST",
       url: `http://${url}/verify`,
       headers: {
         "Content-Type": "application/json",
       },
       data: JSON.stringify({ prodectid: "d6b05a143f1084108d071843c134a297" }),
     }
+    //  Network api axios
     const payload = await axios(config)
     return payload
   }
 
+  /*
+   * React Router Menu
+   *
+   *
+   */
+
   const { isLoading, mutate, isError } = useMutation(networkAuthenticated, {
     onSuccess: async ({ data, status }) => {
-      console.log(">", data)
-      console.log(">", status)
       if (status === 200 && data.Status === "Success") {
-        await SecureStore.setItemAsync("url", url)
-        const _url = await SecureStore.getItemAsync("url")
-
-        console.log("Update url:", _url)
-
-        setURL(_url)
-        navigation.navigate("Login")
+        try {
+          await SecureStore.setItemAsync("url", url)
+          const _url = await SecureStore.getItemAsync("url")
+          navigation.navigate("Login")
+        } catch (e) {
+          console.log("setup/ Error when save url  ", e)
+        }
       }
     },
-
     onError: ({ message, code }) => {
       setAlartMsg({
         visible: true,
@@ -122,7 +158,10 @@ const Setup = (props) => {
           </Button>
         </View>
 
-        <Text>Tanbin Hassan © 2022 - All Rights Reserved.</Text>
+        <View>
+          <Image style={styles({ colors }).logoStyle} source={logosrc} />
+          <StatusBar style="auto" />
+        </View>
       </View>
       <Portal>
         <Dialog visible={alartMsg.visible} onDismiss={hideDialog}>
@@ -185,6 +224,14 @@ const styles = ({ colors }) =>
       marginTop: "5%",
       width: "100%",
       marginBottom: "5%",
+    },
+    logoStyle: {
+      padding: "10%",
+      justifyContent: "center",
+      alignItemsArr: "center",
+      width: 100,
+      height: 80,
+      resizeMode: "contain",
     },
   })
 

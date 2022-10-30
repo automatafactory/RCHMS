@@ -1,4 +1,5 @@
 //React
+import { StrictMode } from "react"
 import { AppRegistry } from "react-native"
 // Expo App
 import { StatusBar } from "expo-status-bar"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { useMutation } from "react-query"
 import axios from "axios"
 import { View, StyleSheet, StatusBar, Image, Appearance } from "react-native"
@@ -14,7 +14,9 @@ import {
 } from "react-native-paper"
 import * as SecureStore from "expo-secure-store"
 
+
 export default function Login(props) {
+    console.log("Address :>> Login")
   /* --------------------------------------------------
 
                       Props   
@@ -23,7 +25,12 @@ export default function Login(props) {
   const navigation = props.navigation
   const themecheme = props.route.params.themecheme
   const theme = props.route.params.theme
-
+  /* -----------------------------------------------------
+          ! context
+------------------------------------------------------*/
+  const token = useContext("LoginContext")
+  console.log("Token>>", token)
+  const setToken = useContext("LoginUpdateContext")
   /* --------------------------------------------------
 
                       State   
@@ -41,10 +48,10 @@ export default function Login(props) {
     require("../../../../assets/logo_d.png")
   )
 
+  console.log(url)
+
   /* --------------------------------------------------
-
                       useEffect   
-
   ----------------------------------------------------- */
   useEffect(() => {
     setLogosrc(
@@ -52,8 +59,6 @@ export default function Login(props) {
         ? require("../../../../assets/logo_d.png")
         : require("../../../../assets/logo_l.png")
     )
-  }, [])
-  useEffect(() => {
     SecureStore.getItemAsync("url").then((payload) => {
       console.log("Home/Login>", payload)
       setUrl(payload)
@@ -68,7 +73,7 @@ export default function Login(props) {
   ----------------------------------------------------- */
   const networkAuthenticated = async ({ url, body }) => {
     const config = {
-      method: "post",
+      method: "POST",
       url: `http://${url}/login`,
       headers: {
         "Content-Type": "application/json",
@@ -76,6 +81,7 @@ export default function Login(props) {
       data: JSON.stringify(body),
     }
     const payload = await axios(config)
+    console.log(">", payload)
     return payload
   }
 
@@ -83,9 +89,9 @@ export default function Login(props) {
     onSuccess: async ({ data }) => {
       await SecureStore.setItemAsync("token", data.token)
       const _token = await SecureStore.getItemAsync("token")
+      setToken(_token)
       navigation.navigate("Home")
     },
-
     onError: (error) => {
       error = error.message
       setVisible(true)
@@ -99,118 +105,118 @@ export default function Login(props) {
     //   setAlartMassaage("Retrying")
     // },
   })
-  if (!loading) {
-    return (
-      <View style={styles({ theme }).container}>
-        <View style={styles({ theme }).row}>
-          <View style={styles({ theme }).header}>
-            <Image
-              source={require("../../../../assets/icon.png")}
-              style={styles({ theme }).img}
-            />
-            <Text style={styles({ theme }).text} variant="displayLarge">
-              Login
-            </Text>
-          </View>
+  // if (!loading) {
+  return (
+    <View style={styles({ theme }).container}>
+      <View style={styles({ theme }).row}>
+        <View style={styles({ theme }).header}>
+          <Image
+            source={require("../../../../assets/icon.png")}
+            style={styles({ theme }).img}
+          />
+          <Text style={styles({ theme }).text} variant="displayLarge">
+            Login
+          </Text>
         </View>
-        <View style={styles({ theme }).row}>
-          <View style={styles({ theme }).body}>
-            <TextInput
-              label="Email"
-              mode="outlined"
-              value={username}
-              onChangeText={(username) => setUsername(username)}
-            />
-            <TextInput
-              mode="outlined"
-              label="Password"
-              placeholder={"********"}
-              value={password}
-              secureTextEntry={secureText}
-              right={
-                <TextInput.Icon
-                  icon="eye"
-                  onPress={() => setSecureText(!secureText)}
-                />
-              }
-              onChangeText={(password) => {
-                setPassword(password)
-              }}
-            />
-            <Text style={styles({ theme }).server}>Current Server: {url}</Text>
+      </View>
+      <View style={styles({ theme }).row}>
+        <View style={styles({ theme }).body}>
+          <TextInput
+            label="Email"
+            mode="outlined"
+            value={username}
+            onChangeText={(username) => setUsername(username)}
+          />
+          <TextInput
+            mode="outlined"
+            label="Password"
+            placeholder={"********"}
+            value={password}
+            secureTextEntry={secureText}
+            right={
+              <TextInput.Icon
+                icon="eye"
+                onPress={() => setSecureText(!secureText)}
+              />
+            }
+            onChangeText={(password) => {
+              setPassword(password)
+            }}
+          />
+          <Text style={styles({ theme }).server}>Current Server: {url}</Text>
 
+          <Button
+            style={styles({ theme }).margins}
+            mode="contained"
+            loading={isLoading}
+            onPress={() =>
+              loginCheck({
+                url,
+                username,
+                password,
+                setVisible,
+                setAlartTitel,
+                setAlartMassaage,
+                mutate,
+              })
+            }
+          >
+            Login
+          </Button>
+          <View style={styles({ theme }).row}>
             <Button
               style={styles({ theme }).margins}
-              mode="contained"
-              loading={isLoading}
-              onPress={() =>
-                loginCheck({
-                  url,
-                  username,
-                  password,
-                  setVisible,
-                  setAlartTitel,
-                  setAlartMassaage,
-                  mutate,
-                })
-              }
+              mode="text"
+              textColor={theme.secondary}
+              onPress={() => {
+                setVisible(true)
+                setAlartTitel(`Notice`)
+                setAlartMassaage(
+                  "Please contact Admin or related branch for Password Reset"
+                )
+              }}
             >
-              Login
+              Forgot Password
             </Button>
-            <View style={styles({ theme }).row}>
-              <Button
-                style={styles({ theme }).margins}
-                mode="text"
-                textColor={theme.secondary}
-                onPress={() => {
-                  setVisible(true)
-                  setAlartTitel(`Notice`)
-                  setAlartMassaage(
-                    "Please contact Admin or related branch for Password Reset"
-                  )
-                }}
-              >
-                Forgot Password
-              </Button>
-              <Button
-                style={styles({ theme }).margins}
-                textColor={theme.error}
-                mode="text"
-                onPress={() => navigation.navigate("Setup")}
-              >
-                Change Server
-              </Button>
-            </View>
+            <Button
+              style={styles({ theme }).margins}
+              textColor={theme.error}
+              mode="text"
+              onPress={() => navigation.navigate("Setup")}
+            >
+              Change Server
+            </Button>
           </View>
         </View>
-        <View style={styles({ theme }).row}>
-          <View style={styles({ theme }).footer}>
-            <Image style={styles({ theme }).logoStyle} source={logosrc} />
-            <StatusBar style="auto" />
-          </View>
-        </View>
-        <Portal>
-          <Dialog
-            style={{ maxHeight: "75%" }}
-            visible={visible}
-            onDismiss={() => setVisible(false)}
-          >
-            <Dialog.Icon icon="alert" />
-            <Dialog.Title>{alartTitel}</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>{alartMassaage}</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={() => setVisible(false)}>Done</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
       </View>
-    )
-  } else
-    <>
-      <ActivityIndicator animating={true} size="large" />
-    </>
+      <View style={styles({ theme }).row}>
+        <View style={styles({ theme }).footer}>
+          <Image style={styles({ theme }).logoStyle} source={logosrc} />
+          <StatusBar style="auto" />
+        </View>
+      </View>
+      <Portal>
+        <Dialog
+          style={{ maxHeight: "75%" }}
+          visible={visible}
+          onDismiss={() => setVisible(false)}
+        >
+          <Dialog.Icon icon="alert" />
+          <Dialog.Title>{alartTitel}</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>{alartMassaage}</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setVisible(false)}>Done</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </View>
+  )
+  // } else
+  //   <>
+  //     <ActivityIndicator animating={true} size="large" />
+  //   </>
 }
 
 const loginCheck = ({

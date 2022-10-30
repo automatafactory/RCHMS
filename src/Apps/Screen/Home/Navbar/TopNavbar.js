@@ -2,9 +2,58 @@ import { useState } from "react"
 import { Appbar, Text, Menu, Divider, Button } from "react-native-paper"
 import { Alert, StyleSheet, View, BackHandler, Image } from "react-native"
 import * as SecureStore from "expo-secure-store"
+
+export default function TopNavbar({ navigation, setToken, theme }) {
+  const [visible, setVisible] = useState(true)
+  const openMenu = () => setVisible(true)
+  const closeMenu = () => setVisible(false)
+  return (
+    <Appbar.Header
+      elevated="true"
+      dark={true}
+      mode="medium"
+      style={{ backgroundColor: theme.colors.primaryContainer }}
+    >
+      <Appbar.BackAction onPress={() => exit()} />
+      <Appbar.Content
+        title={
+          <Text variant="headlineLarge" style={{ color: theme.colors.primary }}>
+            Hampo <Image source={"../../../../assets/logo/af_logo.png"} />
+          </Text>
+        }
+      />
+      {/* <Appbar.Action
+          icon="qrcode-scan"
+          onPress={() => navigation.navigate("CamaraScreen")}
+        /> */}
+
+      <Menu
+        visible={visible}
+        onDismiss={closeMenu}
+        anchor={<Appbar.Action icon="dots-vertical" onPress={openMenu} />}
+      >
+        {/* <Menu.Item onPress={() => {}} title="Item 1" /> */}
+        {/* <Menu.Item onPress={navigation.navigate("Setup")} title="Item 2" /> */}
+        <Divider />
+        <Menu.Item
+          leadingIcon="delete"
+          onPress={() => {
+            deleteAll()
+          }}
+          title="Reset"
+        />
+        <Menu.Item
+          leadingIcon="power"
+          onPress={() => logout({ navigation })}
+          title="Log out"
+        />
+      </Menu>
+    </Appbar.Header>
+  )
+}
+
 const logout = async ({ navigation }) => {
   await SecureStore.deleteItemAsync("token")
-  // navigation.navigator.back()
 }
 
 const exit = () => {
@@ -29,58 +78,4 @@ const deleteAll = async () => {
     .clearMap()
     .then(() => console.log("Deleting Data"))
     .catch((e) => console.log(e))
-}
-
-export default function TopNavbar({ navigation, setToken, theme }) {
-  const [visible, setVisible] = useState(true)
-  const openMenu = () => setVisible(true)
-  const closeMenu = () => setVisible(false)
-  return (
-    <>
-      <Appbar.Header
-        elevated="true"
-        dark={true}
-        mode="medium"
-        style={{ backgroundColor: theme.colors.primaryContainer }}
-      >
-        <Appbar.BackAction onPress={() => exit()} />
-        <Appbar.Content
-          title={
-            <Text
-              variant="headlineLarge"
-              style={{ color: theme.colors.primary }}
-            >
-              Hampo <Image source={"../../../../assets/logo/af_logo.png"} />
-            </Text>
-          }
-        />
-        {/* <Appbar.Action
-          icon="qrcode-scan"
-          onPress={() => navigation.navigate("CamaraScreen")}
-        /> */}
-
-        <Menu
-          visible={visible}
-          onDismiss={closeMenu}
-          anchor={<Appbar.Action icon="dots-vertical" onPress={openMenu} />}
-        >
-          {/* <Menu.Item onPress={() => {}} title="Item 1" /> */}
-          {/* <Menu.Item onPress={navigation.navigate("Setup")} title="Item 2" /> */}
-          <Divider />
-          <Menu.Item
-            leadingIcon="delete"
-            onPress={() => {
-              deleteAll()
-            }}
-            title="Reset"
-          />
-          <Menu.Item
-            leadingIcon="power"
-            onPress={() => logout({ navigation })}
-            title="Log out"
-          />
-        </Menu>
-      </Appbar.Header>
-    </>
-  )
 }

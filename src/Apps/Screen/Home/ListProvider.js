@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useContext, useEffect } from "react"
 
 import {
   FlatList,
@@ -19,18 +19,19 @@ import {
   Provider,
 } from "react-native-paper"
 import moment from "moment"
-import React from "react"
+import storage from "../../Components/storage"
+import {
+  getHistory,
+  setHistory,
+} from "../../Components/contexts/HistoryProvider"
 
 export default function ListProvider({
   animateFrom,
   navigation,
-  history,
-  setHistory,
   visible,
   theme,
 }) {
   const [isExtended, setIsExtended] = useState(true)
-
   const [background, setBackground] = useState()
   Appearance.addChangeListener(({ colorScheme }) => {
     setBackground(colorScheme === "dark" ? "#000" : "#fff")
@@ -41,6 +42,13 @@ export default function ListProvider({
     setIsExtended(currentScrollPosition <= 0)
   }
   const fabStyle = { [animateFrom]: 16 }
+  const history = getHistory()
+  console.log('history :>> ', history);
+
+  if (!history || history.length === 0) {
+  console.log('history null cougth ');
+}
+ 
 
   return (
     <>
@@ -99,7 +107,7 @@ const styles = ({ theme }) =>
       flexGrow: 1,
     },
     back: {
-      backgroundColor: theme.colors.surface,
+      // backgroundColor: theme.colors.surface,
     },
 
     item: {
