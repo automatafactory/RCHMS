@@ -1,45 +1,28 @@
+import React, { useEffect, useState } from "react"
 import TopNavbar from "./Navbar/TopNavbar"
 import ListProvider from "./ListProvider"
-import { getApi } from "../../Components/contexts/ApiContext"
-import { View } from "react-native"
+import { LoginContext } from "../../Components/contexts/LoginContext"
 
 function HomeScreen(props) {
   console.log("Address :>> HomeScreen")
   const navigation = props.navigation
   const theme = props.route.params.theme
+  const { token, fetchToken } = React.useContext(LoginContext)
 
-  // useEffect(() => {
-  //   storage
-  //     .getAllDataForKey("tableData")
-  //     .then((payload) => {
-  //       setHistory(!payload ? payload : payload)
-  //     })
-  //     .then(() => {
-  //       SecureStore.getItemAsync("token").then((payload) => {
-  //         console.log("Home Screen=>", payload)
+  useEffect(() => {
+    fetchToken()
+  }, [])
 
-  //         payload ? setLoading(false) : navigation.navigate("Login")
-  //       })
-  //     })
-  // }, [])
+  useEffect(() => {
+    if (!token) navigation.navigate("Login")
+  }, [token])
 
-  const api = getApi()
-  console.log("api object :>> ", api)
-
-  // if (api) {
-  //   navigation.navigate("Login")
-  // } else {
   return (
     <>
-      <TopNavbar
-        navigation={navigation}
-        theme={theme}
-        setToken={props.route.params.setToken}
-      />
+      <TopNavbar navigation={navigation} theme={theme} />
       <ListProvider theme={theme} navigation={navigation} />
     </>
   )
-  // }
 }
 
 export default HomeScreen

@@ -43,23 +43,27 @@ export default function ListProvider({
   }
   const fabStyle = { [animateFrom]: 16 }
   const history = getHistory()
-  console.log('history :>> ', history);
-
-  if (!history || history.length === 0) {
-  console.log('history null cougth ');
-}
- 
+  console.log("history :>> ", history)
 
   return (
     <>
-      <SafeAreaView>
-        <FlatList
-          style={{ backgroundColor: background }}
-          onScroll={onScroll}
-          data={history}
-          renderItem={({ item }) => CardComponent({ item, theme })}
-        />
-      </SafeAreaView>
+      {!history || history.length === 0 ? (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Avatar.Icon icon="qrcode-scan" />
+          <Text>Scan For Add Data</Text>
+        </View>
+      ) : (
+        <SafeAreaView>
+          <FlatList
+            style={{ backgroundColor: background }}
+            onScroll={onScroll}
+            data={history}
+            renderItem={({ item }) => CardComponent({ item, theme })}
+          />
+        </SafeAreaView>
+      )}
       <AnimatedFAB
         icon={"qrcode-scan"}
         label={"Scan"}

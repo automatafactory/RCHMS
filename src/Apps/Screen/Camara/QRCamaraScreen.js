@@ -13,17 +13,19 @@ import { Camera, CameraType } from "expo-camera"
 import { BarCodeScanner } from "expo-barcode-scanner"
 import HomeScreen from "../Home/HomeScreen"
 
-export default function QRCamaraScreen(props, { navigation }) {
-  const setHistory = props.route.params.setHistory
-  // const { setHistory } = props
-  const [flash, setFlash] = useState("off")
+export default function QRCamaraScreen({ navigation }) {
   const [permission, requestPermission] = Camera.useCameraPermissions()
+  console.log(Camera.useCameraPermissions())
+
+  // Camara nacessary state
+  const [flash, setFlash] = useState("off")
   const [scanned, setScanned] = useState(false)
+  // Barcode red mark state
   const [x, setX] = useState(0)
   const [y, setY] = useState(0)
   const [width, setWidth] = useState(0)
   const [height, setHight] = useState(0)
-
+  // Popup state
   const [visible, setVisible] = useState({
     status: false,
     head: "",
@@ -40,12 +42,15 @@ export default function QRCamaraScreen(props, { navigation }) {
 
   if (!permission.granted) {
     // Camera permissions are not granted yet
+
     return (
-      <View style={styles.container}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text style={{ textAlign: "center" }}>
           We need your permission to show the camera
         </Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button icon="" mode="contained" onPress={requestPermission}>
+          Grant Permission
+        </Button>
       </View>
     )
   }

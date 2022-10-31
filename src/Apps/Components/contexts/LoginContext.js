@@ -1,16 +1,38 @@
-import { useState, createContext } from "react"
+import React from "react"
+import * as SecureStore from "expo-secure-store"
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SAVE_TOKEN":
+      console.log("hello", action.payload)
+      return action.payload
+    default:
+      return state
+  }
+}
+
+const LoginContext = React.createContext()
 
 const LoginProvider = ({ children }) => {
-  const [token, setToken] = useState()
-  const LoginContext = createContext(token)
-  const LoginUpdateContext = createContext(setToken)
+  const [state, dispatch] = React.useReducer(reducer, undefined)
 
-  return (
-    <LoginContext.Provider value={token}>
-      <LoginUpdateContext.Provider value={setToken}>
-        {children}
-      </LoginUpdateContext.Provider>
-    </LoginContext.Provider>
-  )
+  const value = {
+    token: state,
+    fetchToken: async () => {
+      dispatch({
+        type: "SAVE_TOKEN",
+        payload: await SecureStore.getItemAsync("token"),
+      })
+    },
+  }
+
+  // useEffect(() => {
+  //   SecureStore.getItemAsync("token").then((payload) => setToken(payload))
+  // }, [])
+
+  return <LoginContext.Provider value={value}>{children}</LoginContext.Provider>
 }
-export default LoginProvider
+
+export { LoginContext, LoginProvider }
+// export const getLoginToken = () => useContext(LoginContext)
+// export const setLoginToken = () => useContext(TokenUpdateContext)

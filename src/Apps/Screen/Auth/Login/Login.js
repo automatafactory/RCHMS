@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { useMutation } from "react-query"
 import axios from "axios"
 import { View, StyleSheet, StatusBar, Image, Appearance } from "react-native"
@@ -9,34 +9,32 @@ import {
   Button,
   Dialog,
   Text,
-  ActivityIndicator,
-  Provider,
 } from "react-native-paper"
 import * as SecureStore from "expo-secure-store"
+import { getApi } from "../../../Components/contexts/ApiContext"
+import { LoginContext } from "../../../Components/contexts/LoginContext"
 
+// import {
+//   getLoginToken,
+//   setLoginToken,
+// } from "../../../Components/contexts/LoginContext"
 
 export default function Login(props) {
-    console.log("Address :>> Login")
+  console.log("Address :>> Login")
   /* --------------------------------------------------
-
-                      Props   
-
+  
+  * Props   
+  
   ----------------------------------------------------- */
   const navigation = props.navigation
   const themecheme = props.route.params.themecheme
   const theme = props.route.params.theme
-  /* -----------------------------------------------------
-          ! context
-------------------------------------------------------*/
-  const token = useContext("LoginContext")
-  console.log("Token>>", token)
-  const setToken = useContext("LoginUpdateContext")
+
   /* --------------------------------------------------
-
-                      State   
-
-  ----------------------------------------------------- */
-  const [url, setUrl] = useState()
+    
+    State   
+    
+    ----------------------------------------------------- */
   const [alartTitel, setAlartTitel] = useState("Alart")
   const [alartMassaage, setAlartMassaage] = useState()
   const [username, setUsername] = useState()
@@ -48,24 +46,36 @@ export default function Login(props) {
     require("../../../../assets/logo_d.png")
   )
 
-  console.log(url)
-
   /* --------------------------------------------------
                       useEffect   
   ----------------------------------------------------- */
-  useEffect(() => {
-    setLogosrc(
-      themecheme === "dark"
-        ? require("../../../../assets/logo_d.png")
-        : require("../../../../assets/logo_l.png")
-    )
-    SecureStore.getItemAsync("url").then((payload) => {
-      console.log("Home/Login>", payload)
-      setUrl(payload)
-      setLoading(false)
-    })
-  }, [])
+  const { token, fetchToken } = React.useContext(LoginContext)
 
+  useEffect(() => {
+    if (token) navigation.navigate("Home")
+  }, [token])
+
+  // useEffect(() => {
+  //   setLogosrc(
+  //     themecheme === "dark"
+  //       ? require("../../../../assets/logo_d.png")
+  //       : require("../../../../assets/logo_l.png")
+  //   )
+  // }, [])
+
+  /* --------------------------------------------------
+
+ ! Checking if the server url exists not
+
+  ----------------------------------------------------- */
+
+  // if (!api) {
+  //   navigation.navigate("Setup")
+  // }
+  const url = getApi()
+  // const token = getLoginToken()
+  console.log("Login/api :>> ", url)
+  // console.log("Login/Token>>", token)
   /* --------------------------------------------------
 
                       network   
@@ -89,8 +99,8 @@ export default function Login(props) {
     onSuccess: async ({ data }) => {
       await SecureStore.setItemAsync("token", data.token)
       const _token = await SecureStore.getItemAsync("token")
-      setToken(_token)
-      navigation.navigate("Home")
+      setLoginToken(_token)
+      // navigation.navigate("Home")
     },
     onError: (error) => {
       error = error.message

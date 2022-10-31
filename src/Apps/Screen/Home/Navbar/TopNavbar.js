@@ -18,7 +18,7 @@ export default function TopNavbar({ navigation, setToken, theme }) {
       <Appbar.Content
         title={
           <Text variant="headlineLarge" style={{ color: theme.colors.primary }}>
-            Hampo <Image source={"../../../../assets/logo/af_logo.png"} />
+            Hampo
           </Text>
         }
       />

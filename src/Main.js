@@ -6,7 +6,7 @@ const Stack = createNativeStackNavigator()
 
 // ! context menu
 import { HistoryProvider } from "./Apps/Components/contexts/HistoryProvider"
-import LoginProvider from "./Apps/Components/contexts/LoginContext"
+import { LoginProvider } from "./Apps/Components/contexts/LoginContext"
 import { ApiProvider } from "./Apps/Components/contexts/ApiContext"
 
 import HomeScreen from "./Apps/Screen/Home/HomeScreen"
@@ -17,25 +17,24 @@ import QRCamaraScreen from "./Apps/Screen/Camara/QRCamaraScreen"
 const Main = ({ theme, colorScheme }) => {
   console.log("Address :>> Main")
 
-
   return (
     <ApiProvider>
-      <HistoryProvider>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Home">
-         
-            <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{
-                headerShown: false,
-              }}
-              initialParams={{
-                theme: theme,
-              }}
-            />
-       
-            <Stack.Screen
+      <LoginProvider>
+        <HistoryProvider>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Home">
+              <Stack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{
+                  headerShown: false,
+                }}
+                initialParams={{
+                  theme: theme,
+                }}
+              />
+
+              <Stack.Screen
                 name="CamaraScreen"
                 component={QRCamaraScreen}
                 options={{
@@ -48,9 +47,9 @@ const Main = ({ theme, colorScheme }) => {
                     fontWeight: "bold",
                   },
                 }}
-              /> 
-        
-               <Stack.Screen
+              />
+
+              <Stack.Screen
                 name="Login"
                 component={Login}
                 options={{
@@ -60,9 +59,9 @@ const Main = ({ theme, colorScheme }) => {
                   theme: theme,
                   colorScheme: colorScheme,
                 }}
-            /> 
-            
-               <Stack.Screen
+              />
+
+              <Stack.Screen
                 name="Setup"
                 component={Setup}
                 options={{
@@ -77,9 +76,10 @@ const Main = ({ theme, colorScheme }) => {
                 }}
                 initialParams={{ theme: theme }}
               />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </HistoryProvider>
+            </Stack.Navigator>
+          </NavigationContainer>
+        </HistoryProvider>
+      </LoginProvider>
     </ApiProvider>
   )
 }
