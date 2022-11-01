@@ -15,6 +15,15 @@ Features
 The android app lets you:
 
 Screenshots
+![Screenshot_20221101-195328_Expo Go](https://user-images.githubusercontent.com/17877189/199251365-c457abb8-2afc-4e6f-958d-75f9c1bca867.png)
+Server connectivity Screen
+![Screenshot_20221101-195316_Expo Go](https://user-images.githubusercontent.com/17877189/199251444-b011df83-b882-459c-a335-ed90714f6f1f.png)
+Login Screen
+![Screenshot_20221101-195252_Expo Go](https://user-images.githubusercontent.com/17877189/199251455-0afa4c66-a39e-4b7c-af9a-09b8e2a675f6.png)
+
+Home Screen
+![Screenshot_20221101-195243_Expo Go](https://user-images.githubusercontent.com/17877189/199251463-846cbfac-2134-4e7c-9169-9dd855cf1a89.png)
+Scaning Demo
 
 
 **Permissions**
