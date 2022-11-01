@@ -1,7 +1,13 @@
-# Hampo-App
+
+
+<img src="https://user-images.githubusercontent.com/17877189/199253450-87de82a0-b0e6-425f-a953-2d65b3f5b15a.png" alt="drawing" width="100"/> 
+
+# Project RCHMS-App
+
 **Android/ios App Build status**
 
-Hampo is a Hardware Management System and this app is its supporting app.
+
+Hampo is a Hardware Management System and this app works its supporting app.
 Unlike other qrcode scaner, it is design read only hampo qr.
 Hampo-App need a hampo account first, which you are going to use in this app.
 Hampo-App is not available on the Google Play Store.
